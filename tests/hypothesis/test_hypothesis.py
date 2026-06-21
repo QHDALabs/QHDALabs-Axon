@@ -5,22 +5,29 @@ accepts only VerificationResult, and only ACCEPTED results become hypotheses."""
 
 import pytest
 
-from axon.types import CandidateRelation, Verdict, VerificationResult, Hypothesis
+from axon.types import (
+    CandidateRelation,
+    Hypothesis,
+    RelationKind,
+    Verdict,
+    VerificationResult,
+)
 from axon.hypothesis.surface import surface_hypotheses
 
 
 def _result(verdict, a="x", b="y", p=0.01):
-    cand = CandidateRelation(source_id=a, target_id=b, kind="proximity",
+    cand = CandidateRelation(source_id=a, target_id=b, kind=RelationKind.PROXIMITY,
                              score=0.9, provenance=(a, b))
     return VerificationResult(
         candidate=cand, verdict=verdict, statistic=0.9, p_value=p,
-        null_model="permutation", n_resolution=1000,
+        null_model="random-pair", n_resolution=1000,
     )
 
 
 def test_rejects_unverified_input():
     """Feeding a raw candidate (skipping verification) must fail loudly."""
-    raw = CandidateRelation(source_id="a", target_id="b", kind="proximity", score=1.0)
+    raw = CandidateRelation(source_id="a", target_id="b",
+                            kind=RelationKind.PROXIMITY, score=1.0)
     with pytest.raises(TypeError):
         surface_hypotheses([raw])
 

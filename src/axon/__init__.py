@@ -26,6 +26,7 @@ __version__ = "0.1.0"
 # Data contracts that flow between stages.
 from .types import (
     Document,
+    RelationKind,
     CandidateRelation,
     Verdict,
     VerificationResult,
@@ -35,15 +36,19 @@ from .types import (
 # Stage entry points. Importing these must not require Qiskit — the relational
 # layer of qhda-core is pure numpy and the quantum layer is never imported here.
 from .perception.ingest import normalize_text, ingest_text, ingest_corpus
+from .perception.featurize import Featurizer, TfidfFeaturizer, featurize_documents
 from .relational_representation.relation_store import RelationStore
-from .verification.verifier import Verifier, PermutationVerifier, verify_all
+from .verification.verifier import Verifier, RandomPairProximityVerifier, CorpusContext
+from .verification.registry import VerifierRegistry, NoVerifierError, verify_all
 from .verification.null_models import NullResult, permutation_p_value, bootstrap_ci
+from .verification.multiple_testing import benjamini_hochberg, apply_fdr
 from .hypothesis.surface import surface_hypotheses, SurfaceReport
 
 __all__ = [
     "__version__",
     # contracts
     "Document",
+    "RelationKind",
     "CandidateRelation",
     "Verdict",
     "VerificationResult",
@@ -52,15 +57,23 @@ __all__ = [
     "normalize_text",
     "ingest_text",
     "ingest_corpus",
+    "Featurizer",
+    "TfidfFeaturizer",
+    "featurize_documents",
     # stage 2 — relational representation
     "RelationStore",
     # stage 3 — verification
     "Verifier",
-    "PermutationVerifier",
+    "RandomPairProximityVerifier",
+    "CorpusContext",
+    "VerifierRegistry",
+    "NoVerifierError",
     "verify_all",
     "NullResult",
     "permutation_p_value",
     "bootstrap_ci",
+    "benjamini_hochberg",
+    "apply_fdr",
     # stage 4 — hypothesis
     "surface_hypotheses",
     "SurfaceReport",

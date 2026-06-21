@@ -50,9 +50,10 @@ def _require_verified(item: object) -> VerificationResult:
 def _statement_for(result: VerificationResult) -> str:
     """Render a plain-language claim for an accepted relation."""
     c = result.candidate
+    q = "n/a" if result.q_value is None else f"{result.q_value:.4f}"
     return (
-        f"{c.source_id} and {c.target_id} are related ({c.kind}): "
-        f"statistic={result.statistic:.3f}, p={result.p_value!r} "
+        f"{c.source_id} and {c.target_id} are related ({c.kind.value}): "
+        f"statistic={result.statistic:.3f}, p={result.p_value!r}, q(FDR)={q} "
         f"vs null [{result.null_model}]."
     )
 
