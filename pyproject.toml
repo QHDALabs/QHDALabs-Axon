@@ -3,50 +3,39 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "qhda-core"
+name = "qhdalabs-axon"
 version = "0.1.0"
-description = "QHDALabs core mechanisms: conditional bridges, Page-Wootters clocks, relational state, emergent time"
+description = "Axon — the Science Nervous System: a relation-first, verification-before-discovery layer over the scientific literature"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "Krzysztof Banasiewicz" }]
-keywords = ["quantum", "page-wootters", "relational", "qiskit", "emergent-time"]
+keywords = ["literature-based-discovery", "relations", "verification", "qhda-core", "scientific-literature"]
 
-# ── Zależności RDZENIA — minimalne, tylko numpy ──
-# Świadoma decyzja: rdzeń (warstwa relacyjna) NIE wymaga Qiskit ani PyTorch.
-# Dzięki temu projekt klasyczny (np. wildfire) instaluje lekko:
-#   pip install qhda-core
+# ── Core dependencies ──
+# Axon CONSUMES qhda-core; it does not vendor or reimplement it.
+# The relational layer is pure numpy and must work with Qiskit NOT installed.
 dependencies = [
+    "qhda-core>=0.1.0",
     "numpy>=1.24",
 ]
 
-# ── Zależności OPCJONALNE (extras) ──
-# Instalujesz tylko to, czego dany projekt potrzebuje:
-#   pip install "qhda-core[quantum]"   → dokłada Qiskit (warstwa kwantowa)
-#   pip install "qhda-core[torch]"     → dokłada PyTorch (backend relacyjny GPU)
-#   pip install "qhda-core[all]"       → wszystko
+# ── Optional dependencies (extras) ──
+# The quantum layer is wired in only where it earns its place. It is pulled in
+# via qhda-core's own [quantum] extra, mirroring qhda-core's dependency boundary:
+#   pip install "qhdalabs-axon[quantum]"   → qhda-core[quantum] (Qiskit)
 [project.optional-dependencies]
 quantum = [
-    "qiskit>=1.0",
-    "qiskit-aer>=0.14",
-]
-torch = [
-    "torch>=2.0",
+    "qhda-core[quantum]>=0.1.0",
 ]
 dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
 ]
-all = [
-    "qiskit>=1.0",
-    "qiskit-aer>=0.14",
-    "torch>=2.0",
-    "pytest>=7.0",
-]
 
 [project.urls]
-Homepage = "https://github.com/QHDALabs/qhda-core"
-Repository = "https://github.com/QHDALabs/qhda-core"
+Homepage = "https://github.com/QHDALabs/QHDALabs-Axon"
+Repository = "https://github.com/QHDALabs/QHDALabs-Axon"
 
 [tool.setuptools.packages.find]
 where = ["src"]

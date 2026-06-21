@@ -1,0 +1,88 @@
+"""
+axon.perception.ingest — Stage 1: raw scientific text -> normalized Document.
+
+Scope of this scaffold:
+  - ``normalize_text``  : a minimal, clearly-labeled REFERENCE implementation
+                          (whitespace/Unicode normalization). It honestly does
+                          what it says — nothing more.
+  - ``ingest_text``     : wrap a single normalized string into a ``Document``.
+                          Also a minimal reference: it genuinely normalizes and
+                          packages, but does NOT featurize (text -> vector) or
+                          parse document structure.
+  - ``ingest_corpus``   : ingest many sources (files, archives, APIs). NOT
+                          implemented — format parsing and segmentation are real
+                          work and are out of scope for the scaffold.
+
+What is deliberately NOT here (raise NotImplementedError rather than fake it):
+  - PDF/XML/HTML parsing and section segmentation,
+  - reference/citation extraction,
+  - embedding / feature-vector computation (``Document.vector``).
+"""
+
+from __future__ import annotations
+
+import unicodedata
+from typing import Iterable, Iterator, Mapping, Optional
+
+from ..types import Document
+
+
+def normalize_text(raw: str) -> str:
+    """
+    Minimal reference normalization: NFC Unicode + collapsed whitespace.
+
+    Input : raw text of one document.
+    Output: normalized text — NFC-normalized, with runs of whitespace collapsed
+            to single spaces and surrounding whitespace stripped.
+
+    This is intentionally shallow. It is honest about being a placeholder for a
+    real normalization pipeline (de-hyphenation, ligatures, math/figure
+    stripping, language handling), which is not implemented here.
+    """
+    if not isinstance(raw, str):
+        raise TypeError(f"normalize_text expects str, got {type(raw).__name__}")
+    text = unicodedata.normalize("NFC", raw)
+    return " ".join(text.split())
+
+
+def ingest_text(
+    raw: str,
+    *,
+    doc_id: str,
+    source: Optional[str] = None,
+    metadata: Optional[Mapping[str, object]] = None,
+) -> Document:
+    """
+    Reference ingestion of a single in-memory string into a ``Document``.
+
+    Input : raw text + a stable ``doc_id`` (+ optional source/metadata).
+    Output: a ``Document`` with normalized text and ``vector=None``.
+
+    Honest limits: this attaches NO feature vector — featurization is not
+    implemented (see module docstring). Downstream stages that need a vector
+    must be given one explicitly (e.g. toy data in examples/tests).
+    """
+    return Document(
+        doc_id=doc_id,
+        text=normalize_text(raw),
+        source=source,
+        vector=None,
+        metadata=dict(metadata or {}),
+    )
+
+
+def ingest_corpus(sources: Iterable[object]) -> Iterator[Document]:
+    """
+    Ingest many heterogeneous sources (files, archives, API responses) into a
+    stream of normalized ``Document`` objects.
+
+    Input : an iterable of source descriptors (paths, URLs, records...).
+    Output: an iterator of ``Document``.
+
+    NOT IMPLEMENTED: format detection, parsing (PDF/XML/HTML), section
+    segmentation and de-duplication are real work and intentionally not faked.
+    """
+    raise NotImplementedError(
+        "Corpus ingestion (format parsing, segmentation, de-duplication) is not "
+        "implemented in this scaffold. Use ingest_text for in-memory strings."
+    )

@@ -1,0 +1,16 @@
+# LOCAL DEV ONLY — not a substitute for the package metadata.
+#
+# The source of truth for Axon's dependencies is pyproject.toml ([project]
+# dependencies and optional-dependencies). This file only wires up an editable
+# local development checkout where qhda-core is a sibling directory and is not
+# published to a package index.
+#
+# Order matters: install qhda-core first so Axon resolves to the local source
+# rather than a package index. Run from the repo root:
+#
+#   pip install -r requirements-dev.txt
+#   pip install -e ".[dev]"        # then add dev tools (pytest, coverage)
+#
+# Adjust the ../qhda-core path if your checkout lives elsewhere.
+-e ../qhda-core
+-e .

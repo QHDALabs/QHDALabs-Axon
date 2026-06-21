@@ -1,146 +1,136 @@
-# qhda-core
+# Axon — the Science Nervous System (SNS)
 
-**Autorskie mechanizmy QHDALabs jako biblioteka wielokrotnego użytku.**
+Infrastructure for getting a grip on the scientific literature, which grows by
+millions of texts per year.
 
-*Krzysztof Banasiewicz | QHDALabs*
+Axon is built on two theses:
 
-Cztery mechanizmy wypracowane w qmnet, RTANA i XSIG — wydzielone tak, żeby
-importować je w kolejnych projektach zamiast przepisywać od zera.
+1. **The fundamental unit is the relation, not the document.** Value is not in
+   unread papers; it is in the unmet connections between papers that already
+   exist — often across fields that do not talk to each other.
+2. **Verification comes before discovery, never after.** Generating connections
+   is cheap and most candidates are false. The hard, central work is rejecting
+   the false ones. A system that cannot say "this link is spurious" is a noise
+   generator, not science.
 
----
+The conceptual contract is in [Manifest.md](Manifest.md) (Polish). The
+methodological contract — verification before discovery, null results as
+first-class data, honest scope claims — is in
+[VERIFICATION_LOG.md](VERIFICATION_LOG.md).
 
-## Architektura: dwie warstwy
+> Status: scaffolding. The pipeline composes end to end on toy data; most stages
+> are honest stubs (clear docstrings + `NotImplementedError`) with a few
+> clearly-labeled minimal reference implementations. There are no benchmark
+> claims and no fabricated metrics.
+
+## Architecture — the order is the thesis
+
+Axon is a four-stage pipeline. The order is not incidental; reversing it
+(discover first, verify maybe later) produces exactly the inflation of false
+findings the project exists to prevent.
 
 ```text
-
-WARSTWA KWANTOWA  (leci na QC, wymaga Qiskit)
-  conditional_cz_bridge   — most z qmnet
-  page_wootters_clock     — zegar Page-Wootters
-        │
-        │  produkuje
-        ▼
-  MeasurementOutcome      — neutralny kontrakt (zwykłe liczby, zero zależności)
-        │
-        │  konsumuje
-        ▼
-WARSTWA RELACYJNA  (CPU, czysty numpy, zawsze dostępna)
-  RelationalState         — akumulator h(t) (z RTANA)
-  EmergentClock           — emergentny czas (tempo zmian relacyjnych)
+1. perception                 ingest scientific text -> normalized Document
+2. relational_representation  build the map of relations (a relation store,
+                              not a fact store) on qhda-core's relational layer
+3. verification               criticise every candidate against an explicit
+                              null; reject false positives before anything is
+                              surfaced. THIS is the core.
+4. hypothesis                 discoveries = the OUTPUT of verification; built
+                              only from accepted results, never from raw
+                              candidates
 ```
 
-**Dlaczego dwie warstwy:** bridges i Page-Wootters to obwody kwantowe — lecą
-na QC. Ale `h(t)` to klasyczna pętla czytająca wyniki pomiarów — w RTANA był
-PyTorch, w XSIG numpy, nigdy obwodem. Wciśnięcie go do Qiskit zmusiłoby do
-przepisywania przy każdym projekcie klasycznym. Rozdzielenie warstw sprawia,
-że `RelationalState` działa w wildfire **bez instalowania Qiskit**.
+The thesis is enforced structurally: the hypothesis stage accepts only
+`VerificationResult` objects (the output of verification) and raises on anything
+else. There is no code path from a raw candidate to a hypothesis.
 
----
+### Relational and quantum layers
 
-## Instalacja
+Axon consumes [`qhda-core`](https://github.com/QHDALabs/qhda-core); it does not
+vendor or reimplement it. qhda-core has two layers:
+
+- a **relational layer** (pure numpy, always available) — used here for the
+  relation store and its coherence-vs-noise signal;
+- an optional **quantum layer** (Qiskit, an extra) — wired in only where it
+  earns its place.
+
+The relational path of Axon stays fully functional with Qiskit **not** installed,
+mirroring qhda-core's dependency boundary.
+
+## Install
+
+Axon depends on qhda-core. Install the dependency first so it resolves to your
+local checkout rather than PyPI, then install Axon:
 
 ```bash
-# Tylko warstwa relacyjna (lekka, projekty klasyczne jak wildfire):
-pip install git+ssh://git@github.com/QHDALabs/qhda-core.git
+# relational layer only (pure numpy):
+pip install -e ../qhda-core
+pip install -e .
 
-# Z warstwą kwantową (Qiskit, projekty na QC jak XSIG):
-pip install "qhda-core[quantum] @ git+ssh://git@github.com/QHDALabs/qhda-core.git"
-
-# Wszystko (Qiskit + PyTorch + testy):
-pip install "qhda-core[all] @ git+ssh://git@github.com/QHDALabs/qhda-core.git"
+# with the optional quantum layer (Qiskit):
+pip install -e "../qhda-core[quantum]"
+pip install -e ".[quantum]"
 ```
 
-Lokalnie (editable, do rozwoju biblioteki):
-
-```bash
-git clone git@github.com:QHDALabs/qhda-core.git
-cd qhda-core
-pip install -e ".[all]"
-```
-
----
-
-## Użycie
-
-### Warstwa relacyjna (bez Qiskit) — np. wildfire
-
-```python
-from qhda_core import MeasurementOutcome, RelationalState, RelationalConfig
-
-state = RelationalState(RelationalConfig(dim=33, signal_key="stress"))
-
-for week, node_stress in enumerate(weekly_readings):
-    outcome = MeasurementOutcome(
-        observables={"stress": node_stress.mean()},
-        vector=node_stress,                       # stan 33 węzłów
-        bridge_fired=(node_stress.mean() < -0.5), # próg suszy
-        index=week,
-    )
-    state.update(outcome)
-
-print(state.structural_score)   # czy stres narasta koherentnie?
-```
-
-### Warstwa kwantowa (Qiskit) — np. XSIG
-
-```python
-from qiskit import QuantumCircuit
-from qhda_core import page_wootters_clock, conditional_cz_bridge
-
-qc = QuantumCircuit(8)
-page_wootters_clock(qc, clock_qubits=[0,1,2], system_qubits=[3,4,5],
-                    coupling=0.85, clock_phase=delta_corr)
-conditional_cz_bridge(qc, ancilla=6, control=3, target=7,
-                      drive_angle=bridge_angle)
-```
-
-### Emergentny czas
-
-```python
-from qhda_core import EmergentClock
-
-clock = EmergentClock()
-for outcome in stream:
-    clock.tick(outcome)
-
-clock.proper_time      # czas własny ≠ liczba zdarzeń
-clock.time_dilation()  # tempo zmian relacyjnych
-```
-
----
-
-## Mechanizmy — pochodzenie
-
-| Mechanizm | Pochodzenie | Warstwa |
-|---|---|---|
-| `conditional_cz_bridge` | qmnet (measurement-fueled bridges) | kwantowa |
-| `page_wootters_clock` | qmnet / RQTE (Page-Wootters formalism) | kwantowa |
-| `RelationalState` (h(t)) | RTANA (relational temporal awareness) | relacyjna |
-| `EmergentClock` | RQTE / XSIG (emergent relational time) | relacyjna |
-| `MeasurementOutcome` | kontrakt — nowy, spina warstwy | neutralna |
-
----
-
-## Filozofia kontraktu
-
-`MeasurementOutcome` jest celowo neutralny — nie zna Qiskit, nie zna PyTorch.
-To zwykłe liczby (obserwable z pomiarów). Dzięki temu warstwę kwantową można
-wymienić (Qiskit → Cirq → sprzęt) bez ruszania relacyjnej, a warstwa relacyjna
-działa nawet bez żadnego obwodu — sygnał budujesz ręcznie z danych.
-
-To jest ta sama struktura, co w każdym hybrydowym algorytmie kwantowym
-(VQE, QAOA): kwantowy rdzeń + klasyczna pętla nad nim. Fizyczny QC tego nie
-zmienia — obwód leci na sprzęt, wyniki wracają do Pythona, `h(t)` mieli je
-klasycznie.
-
----
-
-## Testy
+Development extras (pytest, coverage):
 
 ```bash
 pip install -e ".[dev]"
-pytest tests/ -v
 ```
 
-## Licencja
+## Quickstart
 
-krzyshtof.com RCSAL v2.0
+```python
+import numpy as np
+from axon import Document, RelationStore, PermutationVerifier, verify_all, surface_hypotheses
+
+# 1) perception: normalized documents (toy vectors supplied; text->vector is
+#    not implemented in the scaffold).
+docs = [
+    Document("a1", "iron and cognition", vector=np.array([1.0, 1.0, 0.0, 0.0])),
+    Document("a2", "dietary iron and memory", vector=np.array([1.0, 0.9, 0.0, 0.0])),
+    Document("r1", "coastal mollusks", vector=np.array([0.0, 0.0, 1.0, -1.0])),
+]
+
+# 2) relational representation: propose candidate relations (cheap, possibly false)
+store = RelationStore(dim=4)
+for d in docs:
+    store.observe(d)
+candidates = store.candidate_relations(threshold=0.5)
+
+# 3) verification: criticise each candidate against an explicit permutation null
+results = verify_all(candidates, PermutationVerifier(seed=0), store)
+
+# 4) hypothesis: surface only what survived verification
+report = surface_hypotheses(results)
+print(report.counts)        # full verdict breakdown — nulls stay visible
+print(report.hypotheses)    # accepted only
+```
+
+A complete runnable version is in [examples/axon_pipeline.py](examples/axon_pipeline.py):
+
+```bash
+python examples/axon_pipeline.py
+```
+
+## Tests
+
+```bash
+pip install -e ".[dev]"
+pytest
+```
+
+The test tree mirrors the package. The verification tests are the core: they
+assert the verifier can return `NULL`/`REJECTED` for chance pairs and accepts
+only genuine structure.
+
+## What this is not
+
+Axon does not produce truth, replace the scientist, or act as an oracle of
+discovery (Manifest, III). It builds the conditions in which an answer can be
+found — and trusted.
+
+---
+
+*QHDALabs | Krzysztof Banasiewicz*
