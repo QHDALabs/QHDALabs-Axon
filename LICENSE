@@ -1,4 +1,95 @@
-MIT License
+krzyshtof.com Research-Centric Source-Available License (RCSAL) v2.0
+(with Internal Research Use Safe Harbor + Optional Time-Delayed Open Release)
+
+Copyright (c) 2026 Krzysztof Banasiewicz
+All rights reserved except as expressly granted below.
+
+0. Acceptance
+By using, copying, modifying, or distributing the Software, You agree to this license.
+
+1. Definitions
+1.1 “Software” means the source code, build scripts, configuration, binaries, documentation, and other materials distributed with this license.
+1.2 “You” means any individual or legal entity exercising permissions under this license.
+1.3 “Non-Commercial Use” means use that is not primarily intended for or directed toward commercial advantage or monetary compensation.
+1.4 “Commercial Use” means any use that supports, enables, or is part of a commercial activity, including (without limitation) use:
+(a) in production,
+(b) to provide services to third parties,
+(c) to generate revenue directly or indirectly,
+(d) to develop, deliver, or improve a paid product or paid service.
+1.5 “Production” means use in live, operational environments, or in any workflow that supports revenue-generating activities, customer-facing systems, paid deliverables, or business-critical operations.
+1.6 “Internal Research/Evaluation Use” (IRU) means internal research, evaluation, testing, benchmarking, and prototyping performed within an organization, excluding Production and excluding third-party service delivery.
+1.7 “Affiliate” means any entity that directly or indirectly controls, is controlled by, or is under common control with an entity.
+
+2. License Grant (Research / Academic / Non-Commercial)
+Subject to full compliance with this license (all sections are conditions of the grant), You are granted a worldwide, non-exclusive, non-transferable, revocable license to:
+(a) use the Software,
+(b) copy the Software,
+(c) modify the Software,
+(d) distribute the Software,
+solely for research, academic, and Non-Commercial Use.
+
+3. Commercial Restriction (General Rule)
+Commercial Use is prohibited unless You have prior written permission from the Licensor.
+
+Commercial Use includes, but is not limited to:
+– Selling, licensing, or sublicensing the Software.
+– Offering the Software (or a substantial portion of its functionality) as a paid service (SaaS, hosted service, API, consulting package, support contract tied to the Software).
+– Integrating the Software into commercial products or services (whether shipped to customers or used to provide services).
+– Using the Software in Production.
+– Using the Software as part of a paid deliverable to a third party (even if the Software itself is not transferred).
+
+4. Internal Research/Evaluation Use (IRU) Safe Harbor
+Notwithstanding Section 3, You may use the Software within a for-profit organization solely for IRU, provided that ALL of the following are true:
+4.1 No Production: the Software is not used in Production and not used to operate, secure, monitor, or deliver any customer-facing or revenue-generating system or service.
+4.2 No third-party delivery: the Software (and any derivative of it) is not used to provide services, training, support, consulting deliverables, or outputs to third parties (including clients).
+4.3 No external redistribution: You do not redistribute the Software outside Your organization and non-affiliate corporate group.
+4.4 Contractors: You may provide the Software to contractors solely to perform IRU on Your behalf, only under a written NDA (or equivalent confidentiality obligation), and only if they do not further distribute it.
+4.5 Commercial trigger: any decision to ship, embed, deploy to Production, or otherwise commercialize requires obtaining a commercial license BEFORE such use.
+
+5. Redistribution Conditions and Attribution
+If You redistribute the Software (modified or unmodified), You must:
+5.1 Provide a copy of this license with the distribution.
+5.2 Retain all copyright notices.
+5.3 Provide prominent attribution to:
+“Krzysztof Banasiewicz (krzyshtof.com) / QHDALabs”
+in documentation and/or “About”/credits, and where reasonably practical in source headers.
+5.4 Clearly mark modifications (e.g., “Modified by on ”).
+5.5 Not misrepresent the origin of the Software and not imply endorsement, sponsorship, or affiliation by the Licensor.
+
+6. Naming, Trademarks, and Branding
+6.1 No trademark grant: This license does not grant rights to use the names, logos, or trademarks “krzyshtof.com” or “QHDALabs” except for factual attribution as required by Section 5.
+6.2 Fork naming: If You distribute a modified version, You must not name it in a way that would reasonably imply it is an official release by the Licensor.
+
+7. Contributions (Inbound = Outbound)
+If You submit contributions (code, documentation, or other materials) intended to be included in the Software, You agree that Your contributions may be distributed by the Licensor under this license and (if applicable) under the Change License described in Section 10.
+
+8. Patent Grant (Limited)
+To the extent the Licensor has patent rights that would be necessarily infringed by using the Software as permitted under this license, the Licensor grants You a non-exclusive, worldwide, royalty-free patent license to make, have made, use, and distribute the Software ONLY within the scope permitted by Sections 2 and 4.
+No patent rights are granted for any Commercial Use.
+
+9. Disclaimer of Warranty
+THE SOFTWARE IS PROVIDED “AS IS” AND “AS AVAILABLE”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+
+10. Optional Time-Delayed Open Release (Change Date)
+10.1 Optional feature: This Section applies ONLY if the Licensor includes a “Change Date” notice in the repository or release notes for a given version of the Software (“Version Notice”).
+10.2 If applicable, then on the stated Change Date for that version, that version of the Software becomes additionally available under the “Change License” stated in the Version Notice.
+10.3 Default if not stated: If a Version Notice exists but does not specify terms, the default Change Date is 3 years after the first public release of that version, and the default Change License is Apache License 2.0.
+10.4 Clarity: The Change Date/Change License applies per-version; it does not automatically apply to later versions unless the Licensor provides a Version Notice for them.
+
+11. Limitation of Liability
+TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL THE LICENSOR BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR ITS USE.
+
+12. Termination
+12.1 Automatic termination: Any violation of this license terminates Your rights under this license automatically.
+12.2 Post-termination: Upon termination, You must immediately cease all use and distribution of the Software.
+12.3 Survival: Sections 5–12 survive termination to the extent permitted by law.
+
+13. Commercial Licensing
+Commercial licenses (including Production use rights, customer-facing use rights, distribution in commercial products, and paid service rights) are available.
+Contact: krzyshtof@gmail.com
+Website: https://krzyshtof.com
+
+END OF TERMS AND CONDITIONSMIT License
 
 Copyright (c) 2026 Krzysztof Banasiewicz
 

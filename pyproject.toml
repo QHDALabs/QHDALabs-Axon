@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qhda-core"
+version = "0.1.0"
+description = "QHDALabs core mechanisms: conditional bridges, Page-Wootters clocks, relational state, emergent time"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Krzysztof Banasiewicz" }]
+keywords = ["quantum", "page-wootters", "relational", "qiskit", "emergent-time"]
+
+# ── Zależności RDZENIA — minimalne, tylko numpy ──
+# Świadoma decyzja: rdzeń (warstwa relacyjna) NIE wymaga Qiskit ani PyTorch.
+# Dzięki temu projekt klasyczny (np. wildfire) instaluje lekko:
+#   pip install qhda-core
+dependencies = [
+    "numpy>=1.24",
+]
+
+# ── Zależności OPCJONALNE (extras) ──
+# Instalujesz tylko to, czego dany projekt potrzebuje:
+#   pip install "qhda-core[quantum]"   → dokłada Qiskit (warstwa kwantowa)
+#   pip install "qhda-core[torch]"     → dokłada PyTorch (backend relacyjny GPU)
+#   pip install "qhda-core[all]"       → wszystko
+[project.optional-dependencies]
+quantum = [
+    "qiskit>=1.0",
+    "qiskit-aer>=0.14",
+]
+torch = [
+    "torch>=2.0",
+]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+]
+all = [
+    "qiskit>=1.0",
+    "qiskit-aer>=0.14",
+    "torch>=2.0",
+    "pytest>=7.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/QHDALabs/qhda-core"
+Repository = "https://github.com/QHDALabs/qhda-core"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
