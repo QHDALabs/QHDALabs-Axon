@@ -21,8 +21,10 @@ What is deliberately NOT here (raise NotImplementedError rather than fake it):
 
 from __future__ import annotations
 
+import json
 import unicodedata
-from typing import Iterable, Iterator, Mapping, Optional
+from pathlib import Path
+from typing import Iterator, Mapping, Optional, Union
 
 from ..types import Document
 
@@ -71,18 +73,38 @@ def ingest_text(
     )
 
 
-def ingest_corpus(sources: Iterable[object]) -> Iterator[Document]:
+def ingest_corpus(path: Union[str, Path]) -> Iterator[Document]:
     """
-    Ingest many heterogeneous sources (files, archives, API responses) into a
-    stream of normalized ``Document`` objects.
+    Ingest a committed JSON corpus into a stream of normalized ``Document``.
 
-    Input : an iterable of source descriptors (paths, URLs, records...).
-    Output: an iterator of ``Document``.
+    Input : path to a JSON file holding a list of records, each with at least
+            ``id`` and ``text``; optional ``source``, ``domain``, ``title``,
+            ``category``. (This is the schema produced by scripts/fetch_corpus.py;
+            see data/corpus_mvp.README.md.)
+    Output: an iterator of ``Document`` with normalized text. ``domain``, ``title``
+            and ``category`` are carried in ``metadata`` (the relational stage reads
+            ``domain`` for null stratification); ``vector`` is left None — call a
+            ``Featurizer`` (see ``perception.featurize``) to attach vectors.
 
-    NOT IMPLEMENTED: format detection, parsing (PDF/XML/HTML), section
-    segmentation and de-duplication are real work and intentionally not faked.
+    Scope: this reads the project's own JSON corpus. Parsing arbitrary formats
+    (PDF/XML/HTML) and section segmentation remain out of scope and are not faked.
     """
-    raise NotImplementedError(
-        "Corpus ingestion (format parsing, segmentation, de-duplication) is not "
-        "implemented in this scaffold. Use ingest_text for in-memory strings."
-    )
+    records = json.loads(Path(path).read_text(encoding="utf-8"))
+    if not isinstance(records, list):
+        raise ValueError(f"corpus at {path} must be a JSON list of records")
+
+    for i, rec in enumerate(records):
+        if "id" not in rec or "text" not in rec:
+            raise ValueError(f"record {i} in {path} is missing required 'id'/'text'")
+        meta = {
+            "domain": rec.get("domain"),
+            "title": rec.get("title"),
+            "category": rec.get("category"),
+        }
+        yield Document(
+            doc_id=str(rec["id"]),
+            text=normalize_text(str(rec["text"])),
+            source=rec.get("source"),
+            vector=None,
+            metadata=meta,
+        )

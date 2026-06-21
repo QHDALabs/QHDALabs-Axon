@@ -1,86 +1,111 @@
 """Stage 3 tests — verification. This is the core: false-positive rejection.
 
-A verifier that can only accept is a noise generator. These tests assert it can
-return NULL/REJECTED for spurious pairs and ACCEPTED only for real structure."""
+The verifier must be able to return INCONCLUSIVE / REJECTED / NULL and must NEVER
+return ACCEPTED on its own (acceptance is decided by FDR across the family). Tests
+use a controlled FakeCorpus so the null is exactly known."""
 
 import numpy as np
 import pytest
 
-from axon.types import CandidateRelation, Verdict
-from axon.verification.verifier import Verifier, PermutationVerifier
-from axon.verification.null_models import permutation_p_value
+from axon.types import CandidateRelation, RelationKind, Verdict
+from axon.verification.verifier import Verifier, RandomPairProximityVerifier
+from axon.verification.multiple_testing import apply_fdr
 
 
-class DictContext:
-    """Minimal VectorContext backed by a dict, for testing."""
+class FakeCorpus:
+    """Deterministic CorpusContext with explicit vectors / domains / length bands."""
 
-    def __init__(self, vectors):
+    def __init__(self, vectors, domains=None, bands=None):
         self._v = {k: np.asarray(v, dtype=float) for k, v in vectors.items()}
+        self._dom = domains or {k: "d" for k in self._v}
+        self._band = bands or {k: 0 for k in self._v}
 
     def vector_for(self, doc_id):
         return self._v[doc_id]
 
+    def all_doc_ids(self):
+        return tuple(self._v)
 
-def _candidate(a, b, score=1.0, kind="proximity"):
-    return CandidateRelation(source_id=a, target_id=b, kind=kind, score=score,
+    def domain_of(self, doc_id):
+        return self._dom[doc_id]
+
+    def length_band_of(self, doc_id):
+        return self._band[doc_id]
+
+
+def _cand(a, b, kind=RelationKind.PROXIMITY):
+    return CandidateRelation(source_id=a, target_id=b, kind=kind, score=1.0,
                              provenance=(a, b))
+
+
+def _single_domain_corpus(n=12, seed=0):
+    """One domain, one band: stratum = all C(n,2) pairs. Plant an aligned a~b."""
+    rng = np.random.default_rng(seed)
+    dim = 16
+    pattern = rng.normal(0, 1.0, dim)
+    vectors = {f"r{i}": rng.normal(0, 1.0, dim) for i in range(n - 2)}
+    vectors["a"] = pattern + rng.normal(0, 0.05, dim)
+    vectors["b"] = pattern + rng.normal(0, 0.05, dim)
+    return FakeCorpus(vectors)
 
 
 def test_base_verifier_is_abstract():
     with pytest.raises(NotImplementedError):
-        Verifier().verify(_candidate("a", "b"), DictContext({}))
+        Verifier().verify(_cand("a", "b"), FakeCorpus({"a": [1, 0], "b": [0, 1]}))
 
 
 def test_unsupported_kind_raises():
-    v = PermutationVerifier(seed=0)
-    ctx = DictContext({"a": [1, 0], "b": [0, 1]})
+    v = RandomPairProximityVerifier(min_resolution=1)
+    ctx = FakeCorpus({"a": [1, 0], "b": [0, 1]})
     with pytest.raises(NotImplementedError):
-        v.verify(_candidate("a", "b", kind="abc-bridge"), ctx)
+        v.verify(_cand("a", "b", kind=RelationKind.ABC_BRIDGE), ctx)
 
 
-def test_accepts_genuinely_aligned_pair():
-    rng = np.random.default_rng(0)
-    pattern = rng.normal(0, 1.0, 32)
-    ctx = DictContext({
-        "a": pattern + rng.normal(0, 0.1, 32),
-        "b": pattern + rng.normal(0, 0.1, 32),
-    })
-    v = PermutationVerifier(alpha=0.05, n_permutations=2000, seed=1)
-    result = v.verify(_candidate("a", "b"), ctx)
-    assert result.verdict is Verdict.ACCEPTED
-    assert result.p_value < 0.05
-    assert result.null_model  # an explicit null was stated
+def test_verifier_never_returns_accepted_on_its_own():
+    """Acceptance requires FDR; a single verify() must not accept."""
+    ctx = _single_domain_corpus()
+    v = RandomPairProximityVerifier(min_resolution=5)
+    result = v.verify(_cand("a", "b"), ctx)
+    assert result.verdict is not Verdict.ACCEPTED
+    assert result.verdict is Verdict.NULL          # high cos, above null mean, pending
+    assert result.p_value is not None and result.p_value < 0.05
+    assert result.null_model                        # an explicit null was stated
 
 
-def test_rejects_or_nulls_spurious_pair():
+def test_aligned_pair_accepted_only_after_fdr():
+    ctx = _single_domain_corpus()
+    v = RandomPairProximityVerifier(min_resolution=5)
+    raw = v.verify(_cand("a", "b"), ctx)
+    # Family of one with low p -> BH threshold alpha -> ACCEPTED.
+    promoted = apply_fdr([raw], alpha=0.05)
+    assert promoted[0].verdict is Verdict.ACCEPTED
+    assert promoted[0].q_value is not None and promoted[0].q_value <= 0.05
+
+
+def test_chance_pair_is_not_accepted():
     """The point of the whole stage: a chance pair must NOT be accepted."""
     rng = np.random.default_rng(7)
-    ctx = DictContext({
-        "a": rng.normal(0, 1.0, 64),
-        "b": rng.normal(0, 1.0, 64),  # independent of a
-    })
-    v = PermutationVerifier(alpha=0.05, n_permutations=2000, seed=2)
-    result = v.verify(_candidate("a", "b"), ctx)
-    assert result.verdict is not Verdict.ACCEPTED
-    assert result.verdict in (Verdict.NULL, Verdict.REJECTED)
+    vectors = {f"r{i}": rng.normal(0, 1.0, 32) for i in range(10)}
+    ctx = FakeCorpus(vectors)
+    v = RandomPairProximityVerifier(min_resolution=5)
+    raw = v.verify(_cand("r0", "r1"), ctx)
+    assert raw.verdict in (Verdict.NULL, Verdict.REJECTED)
+    promoted = apply_fdr([raw], alpha=0.05)
+    assert promoted[0].verdict is not Verdict.ACCEPTED
 
 
 def test_low_resolution_is_inconclusive_not_overclaimed():
-    ctx = DictContext({"a": [1.0, 1.0, 1.0, 1.0], "b": [1.0, 1.0, 1.0, 1.0]})
-    v = PermutationVerifier(n_permutations=10, min_resolution=200, seed=0)
-    result = v.verify(_candidate("a", "b"), ctx)
+    ctx = FakeCorpus({"a": [1.0, 1.0], "b": [1.0, 1.0], "c": [0.0, 1.0]})
+    v = RandomPairProximityVerifier(min_resolution=20)  # only 3 pairs available
+    result = v.verify(_cand("a", "b"), ctx)
     assert result.verdict is Verdict.INCONCLUSIVE
+    assert result.p_value is None
 
 
-def test_permutation_p_value_resolution_floor():
-    """p-value cannot be finer than ~1/(n+1) — the +1 correction guarantees >0."""
-    data = np.array([3.0, 1.0, 2.0])
-    res = permutation_p_value(
-        statistic=lambda x: float(x[0]),
-        data=data,
-        permute=lambda x, r: r.permutation(x),
-        n_permutations=100,
-        rng=np.random.default_rng(0),
-    )
-    assert res.p_value >= 1.0 / (100 + 1)
-    assert res.n_resolution == 100
+def test_null_excludes_the_candidate_pair_itself():
+    """The candidate's own similarity must not be part of its own null."""
+    ctx = _single_domain_corpus()
+    v = RandomPairProximityVerifier(min_resolution=5)
+    result = v.verify(_cand("a", "b"), ctx)
+    # n eligible = C(12,2) - 1 (the a~b pair removed) = 65.
+    assert result.n_resolution == 12 * 11 // 2 - 1

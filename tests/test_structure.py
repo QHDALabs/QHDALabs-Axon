@@ -23,10 +23,14 @@ def test_four_stages_importable():
 
 def test_public_api_surface():
     expected = {
-        "Document", "CandidateRelation", "Verdict", "VerificationResult", "Hypothesis",
+        "Document", "RelationKind", "CandidateRelation", "Verdict",
+        "VerificationResult", "Hypothesis",
         "normalize_text", "ingest_text", "ingest_corpus",
+        "Featurizer", "TfidfFeaturizer", "featurize_documents",
         "RelationStore",
-        "Verifier", "PermutationVerifier", "verify_all",
+        "Verifier", "RandomPairProximityVerifier", "CorpusContext",
+        "VerifierRegistry", "NoVerifierError", "verify_all",
+        "benjamini_hochberg", "apply_fdr",
         "surface_hypotheses",
     }
     assert expected.issubset(set(axon.__all__))

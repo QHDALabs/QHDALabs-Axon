@@ -7,11 +7,16 @@ import numpy as np
 import pytest
 
 from axon.relational_representation.relation_store import RelationStore
-from axon.types import Document, CandidateRelation
+from axon.types import CandidateRelation, Document, RelationKind
 
 
-def _doc(doc_id, vec):
-    return Document(doc_id=doc_id, text=doc_id, vector=np.asarray(vec, dtype=float))
+def _doc(doc_id, vec, domain="d", text=None):
+    return Document(
+        doc_id=doc_id,
+        text=text if text is not None else doc_id,
+        vector=np.asarray(vec, dtype=float),
+        metadata={"domain": domain},
+    )
 
 
 def test_observe_requires_vector():
@@ -26,6 +31,13 @@ def test_observe_rejects_wrong_dim():
         store.observe(_doc("d", [1.0, 2.0]))
 
 
+def test_observe_rejects_duplicate_id():
+    store = RelationStore(dim=2)
+    store.observe(_doc("a", [1.0, 0.0]))
+    with pytest.raises(ValueError):
+        store.observe(_doc("a", [0.0, 1.0]))
+
+
 def test_candidate_relations_flags_aligned_pair():
     store = RelationStore(dim=4)
     store.observe(_doc("a1", [1.0, 1.0, 0.0, 0.0]))
@@ -33,9 +45,28 @@ def test_candidate_relations_flags_aligned_pair():
     store.observe(_doc("b1", [0.0, 0.0, 1.0, -1.0]))  # orthogonal to the a's
     cands = store.candidate_relations(threshold=0.8)
     assert all(isinstance(c, CandidateRelation) for c in cands)
+    assert all(c.kind is RelationKind.PROXIMITY for c in cands)
     pairs = {(c.source_id, c.target_id) for c in cands}
     assert ("a1", "a2") in pairs
     assert ("a1", "b1") not in pairs
+
+
+def test_corpus_context_methods():
+    store = RelationStore(dim=2, n_length_bands=2)
+    store.observe(_doc("a", [1.0, 0.0], domain="astro", text="one two three four five"))
+    store.observe(_doc("b", [0.0, 1.0], domain="astro", text="one"))
+    store.observe(_doc("c", [1.0, 1.0], domain="neuro", text="one two three"))
+    assert set(store.all_doc_ids()) == {"a", "b", "c"}
+    assert store.domain_of("a") == "astro"
+    assert store.domain_of("c") == "neuro"
+    # Length bands are quantile cuts: the longest doc must not be in the lowest band.
+    assert store.length_band_of("a") >= store.length_band_of("b")
+
+
+def test_domain_defaults_to_unknown():
+    store = RelationStore(dim=2)
+    store.observe(Document(doc_id="a", text="x", vector=np.array([1.0, 0.0])))
+    assert store.domain_of("a") == "unknown"
 
 
 def test_structural_score_is_float():
@@ -56,10 +87,7 @@ def test_vector_for_unknown_id_raises():
 
 def test_works_without_qiskit():
     """No import of the quantum layer; pure numpy path must run."""
-    import sys
     store = RelationStore(dim=3)
     store.observe(_doc("a", [1.0, 0.0, 0.0]))
     assert store.n_observed == 1
-    # qiskit may or may not be installed; either way this code path never imports it.
     assert "qiskit" not in str(type(store))
-    _ = sys  # silence linters; presence-of-qiskit is irrelevant to this path

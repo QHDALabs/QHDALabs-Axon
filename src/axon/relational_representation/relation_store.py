@@ -10,35 +10,35 @@ It is built on qhda-core's relational layer (``RelationalState`` /
 not installed — we import only the relational layer of qhda-core, never the
 quantum layer, mirroring qhda-core's own dependency boundary.
 
-Scope of this scaffold:
-  - ``RelationStore.observe``           : fold a document's feature vector into a
-                                          qhda-core ``RelationalState``. Minimal
-                                          REFERENCE: it requires a precomputed
-                                          ``Document.vector`` (text -> vector is
-                                          not implemented here).
-  - ``RelationStore.candidate_relations``: propose ``CandidateRelation`` pairs by
-                                          cosine proximity over observed vectors.
-                                          Minimal REFERENCE heuristic — a cheap
-                                          proposal generator, explicitly NOT a
-                                          claim of real relatedness. That claim
-                                          is the verification stage's job.
-  - ``RelationStore.structural_score``  : expose qhda-core's structural score for
-                                          the observed stream (coherence vs noise).
+What it does:
+  - ``observe``            : fold a featurized document into a qhda-core
+                             ``RelationalState`` and record its vector, domain and
+                             length (the latter two are confounders the verification
+                             null stratifies on).
+  - ``candidate_relations``: propose ``CandidateRelation`` pairs by cosine
+                             proximity. A cheap proposal generator — high score
+                             means "worth criticising", NOT "related". The claim is
+                             the verification stage's job.
+  - ``structural_score``   : expose qhda-core's structural score (coherence signal).
 
-NOT implemented (raise rather than fake): turning text into vectors/term graphs,
-ABC (Swanson) bridge construction, cross-domain term alignment.
+The store also serves as the ``CorpusContext`` the proximity verifier reads from:
+it can enumerate all doc ids and report each document's domain and length band, so
+the random-pair null can be matched on those confounders.
+
+NOT implemented (raise rather than fake): ABC (Swanson) bridge construction,
+cross-domain term alignment, mechanistic relation kinds.
 """
 
 from __future__ import annotations
 
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
 
 # Relational layer of qhda-core ONLY. Importing this must not require Qiskit.
 from qhda_core import MeasurementOutcome, RelationalState, RelationalConfig
 
-from ..types import CandidateRelation, Document
+from ..types import CandidateRelation, Document, RelationKind
 
 
 def _cosine(a: np.ndarray, b: np.ndarray) -> float:
@@ -67,12 +67,16 @@ class RelationStore:
         coupling_fired: float = 0.7,
         coupling_base: float = 0.3,
         gain: float = 0.4,
+        n_length_bands: int = 2,
     ) -> None:
         """
-        Input : feature dimensionality ``dim`` (must match document vectors) and
-                qhda-core relational coupling parameters.
+        Input : feature dimensionality ``dim`` (must match document vectors),
+                qhda-core relational coupling parameters, and ``n_length_bands``
+                (how coarsely to bucket document length for null stratification;
+                2 = short/long by median, keeps strata viable in a small corpus).
         """
         self._dim = int(dim)
+        self._n_length_bands = max(1, int(n_length_bands))
         self._state = RelationalState(
             RelationalConfig(
                 dim=self._dim,
@@ -83,6 +87,9 @@ class RelationStore:
         )
         self._ids: List[str] = []
         self._vectors: List[np.ndarray] = []
+        self._domains: List[str] = []
+        self._lengths: List[int] = []
+        self._pos: Dict[str, int] = {}
 
     def observe(self, document: Document, *, bridge_fired: Optional[bool] = None) -> None:
         """
@@ -107,6 +114,8 @@ class RelationStore:
                 f"document {document.doc_id!r} vector has shape {vec.shape}, "
                 f"expected ({self._dim},)"
             )
+        if document.doc_id in self._pos:
+            raise ValueError(f"duplicate doc_id {document.doc_id!r}")
         outcome = MeasurementOutcome(
             observables={"norm": float(np.linalg.norm(vec))},
             vector=vec,
@@ -115,11 +124,14 @@ class RelationStore:
             meta={"doc_id": document.doc_id},
         )
         self._state.update(outcome)
+        self._pos[document.doc_id] = len(self._ids)
         self._ids.append(document.doc_id)
         self._vectors.append(vec)
+        self._domains.append(str(document.metadata.get("domain") or "unknown"))
+        self._lengths.append(len(document.text.split()))
 
     def candidate_relations(
-        self, *, threshold: float = 0.5, kind: str = "proximity"
+        self, *, threshold: float = 0.5, kind: RelationKind = RelationKind.PROXIMITY
     ) -> List[CandidateRelation]:
         """
         Propose candidate relations by cosine proximity over observed vectors.
@@ -128,10 +140,9 @@ class RelationStore:
         Output: a list of ``CandidateRelation`` for every unordered pair whose
                 cosine similarity >= ``threshold``.
 
-        This is a minimal REFERENCE heuristic. A high score here means "worth
-        criticising", NOT "related". Whether a candidate survives is decided by
-        the verification stage against an explicit null — generating these
-        proposals is cheap and many will be spurious by construction.
+        This is a cheap proposal generator. A high score means "worth criticising",
+        NOT "related". Whether a candidate survives is decided by the verification
+        stage against an explicit null — many proposals are spurious by construction.
         """
         candidates: List[CandidateRelation] = []
         n = len(self._vectors)
@@ -151,12 +162,39 @@ class RelationStore:
                     )
         return candidates
 
+    # ── CorpusContext: what the proximity verifier reads for its random-pair null ──
     def vector_for(self, doc_id: str) -> np.ndarray:
-        """Return the stored feature vector for ``doc_id`` (used by verifiers)."""
+        """Return the stored feature vector for ``doc_id``."""
         try:
-            return self._vectors[self._ids.index(doc_id)]
-        except ValueError as exc:
+            return self._vectors[self._pos[doc_id]]
+        except KeyError as exc:
             raise KeyError(f"unknown doc_id {doc_id!r}") from exc
+
+    def all_doc_ids(self) -> Sequence[str]:
+        """All observed doc ids, in observation order."""
+        return tuple(self._ids)
+
+    def domain_of(self, doc_id: str) -> str:
+        """Domain label of ``doc_id`` ('unknown' if none was provided)."""
+        return self._domains[self._pos[doc_id]]
+
+    def length_band_of(self, doc_id: str) -> int:
+        """
+        Coarse length band of ``doc_id`` in ``[0, n_length_bands)``.
+
+        Bands are quantile cuts over the observed length distribution, so they are
+        relative to this corpus. Used to match random pairs on document length.
+        """
+        length = self._lengths[self._pos[doc_id]]
+        thresholds = self._length_thresholds()
+        return int(np.searchsorted(thresholds, length, side="right"))
+
+    def _length_thresholds(self) -> np.ndarray:
+        if self._n_length_bands <= 1 or not self._lengths:
+            return np.empty(0, dtype=float)
+        qs = [k / self._n_length_bands for k in range(1, self._n_length_bands)]
+        thresholds: np.ndarray = np.quantile(np.asarray(self._lengths, dtype=float), qs)
+        return thresholds
 
     def vector_matrix(self) -> Tuple[List[str], np.ndarray]:
         """Return ``(ids, matrix)`` of all observed vectors, for null models."""

@@ -18,10 +18,12 @@ methodological contract — verification before discovery, null results as
 first-class data, honest scope claims — is in
 [VERIFICATION_LOG.md](VERIFICATION_LOG.md).
 
-> Status: scaffolding. The pipeline composes end to end on toy data; most stages
-> are honest stubs (clear docstrings + `NotImplementedError`) with a few
-> clearly-labeled minimal reference implementations. There are no benchmark
-> claims and no fabricated metrics.
+> Status: MVP. The pipeline runs end to end on a small, fixed, **real** corpus
+> (`data/corpus_mvp.json`) for ONE relation kind — `PROXIMITY` — using a lexical
+> TF-IDF baseline, an empirical **random-pair null**, and **Benjamini-Hochberg FDR**
+> control. The only claim is "lexical proximity, FDR-controlled"; no semantic or
+> mechanistic claim is made. Mechanistic relation kinds are declared but left
+> unregistered (they fail closed). No benchmark claims, no fabricated metrics.
 
 ## Architecture — the order is the thesis
 
@@ -82,37 +84,67 @@ pip install -e ".[dev]"
 ## Quickstart
 
 ```python
-import numpy as np
-from axon import Document, RelationStore, PermutationVerifier, verify_all, surface_hypotheses
+from pathlib import Path
+from axon import (
+    ingest_corpus, TfidfFeaturizer, featurize_documents, RelationStore,
+    RelationKind, RandomPairProximityVerifier, VerifierRegistry,
+    verify_all, apply_fdr, surface_hypotheses,
+)
 
-# 1) perception: normalized documents (toy vectors supplied; text->vector is
-#    not implemented in the scaffold).
-docs = [
-    Document("a1", "iron and cognition", vector=np.array([1.0, 1.0, 0.0, 0.0])),
-    Document("a2", "dietary iron and memory", vector=np.array([1.0, 0.9, 0.0, 0.0])),
-    Document("r1", "coastal mollusks", vector=np.array([0.0, 0.0, 1.0, -1.0])),
-]
+# 1) perception: ingest the committed real corpus, then featurize (lexical TF-IDF;
+#    this captures lexical proximity, NOT semantic/mechanistic equivalence).
+docs = list(ingest_corpus(Path("data/corpus_mvp.json")))
+docs = featurize_documents(TfidfFeaturizer(), docs)
 
-# 2) relational representation: propose candidate relations (cheap, possibly false)
-store = RelationStore(dim=4)
+# 2) relational representation: propose candidate proximity relations (cheap).
+store = RelationStore(dim=docs[0].vector.shape[0])
 for d in docs:
     store.observe(d)
-candidates = store.candidate_relations(threshold=0.5)
+candidates = store.candidate_relations(threshold=0.0)  # FDR is applied across all
 
-# 3) verification: criticise each candidate against an explicit permutation null
-results = verify_all(candidates, PermutationVerifier(seed=0), store)
+# 3) verification: dispatch via a fail-closed registry to a verifier with an
+#    explicit null; here the empirical random-pair null. Then FDR across the family.
+registry = VerifierRegistry()
+registry.register(RelationKind.PROXIMITY, RandomPairProximityVerifier())
+results = apply_fdr(verify_all(candidates, registry, store), alpha=0.05)
 
-# 4) hypothesis: surface only what survived verification
+# 4) hypothesis: surface only what survived FDR; nulls/rejected stay visible.
 report = surface_hypotheses(results)
 print(report.counts)        # full verdict breakdown — nulls stay visible
 print(report.hypotheses)    # accepted only
 ```
 
-A complete runnable version is in [examples/axon_pipeline.py](examples/axon_pipeline.py):
+A complete runnable version is in
+[examples/mvp_proximity_null.py](examples/mvp_proximity_null.py):
 
 ```bash
-python examples/axon_pipeline.py
+python examples/mvp_proximity_null.py
 ```
+
+### The null model, and an honest result
+
+For `PROXIMITY` the null is **empirical**: the distribution of cosine similarity
+over real document pairs drawn from the same corpus, **stratified** so each
+candidate is compared only against random pairs matched on its confounders (domain
+and a coarse length band). The candidate's own pair is excluded from its null.
+(An earlier reference permuted vector *dimensions* — an invalid null for real text
+vectors that only asks "more aligned than a random direction?"; see
+[VERIFICATION_LOG.md](VERIFICATION_LOG.md).)
+
+On the committed 40-document corpus, with BH-FDR applied across all 780 pairs,
+**no proximity relation survives** (34 pairs are nominally significant at raw
+p<0.05; none after FDR). That is the correct, reported outcome — an honest null,
+not a failure. It also reflects a structural fact: an empirical same-corpus pair
+null has a p-value floor of ~1/(stratum size), which cannot beat the
+multiple-testing burden when *every* pair is tested. Surfacing only what survives
+(here: nothing) is exactly the false-positive rejection the project exists for.
+
+### Relation kinds (fail closed)
+
+`RelationKind` declares `PROXIMITY` plus placeholders (`SAME_MECHANISM_AS`,
+`SUPPORTS`, `CONTRADICTS`, `ABC_BRIDGE`, `MEASUREMENT_BRIDGE`). Only `PROXIMITY`
+has a registered verifier; proposing any other kind **raises** (no silent fallback
+to proximity). No relation kind ships without its own explicit null.
 
 ## Tests
 

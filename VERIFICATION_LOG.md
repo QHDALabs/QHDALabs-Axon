@@ -96,6 +96,61 @@ a stated null and the ability to reject.
 
 ---
 
+### [2026-06-21] Session: MVP proximity — null-model fix + FDR (engineering + methodology, no scientific claim)
+
+Engineering + methodology entry. No scientific hypothesis about the literature is
+tested; the corpus is illustrative. Numbers below are pipeline outputs on a fixed,
+real corpus, **not** a claim about any paper or any relation between papers.
+
+**The flaw we fixed (this is the point).** The scaffold's proximity verifier built
+its null by permuting the *components* of one vector. For real text vectors that is
+an INVALID null: it tests "is this pair more aligned than a random direction in
+feature space?" — a near-trivial bar that any two same-domain TF-IDF vectors clear,
+inflating significance. It answers the wrong question.
+
+**The valid null.** For `PROXIMITY` the null is now EMPIRICAL: the distribution of
+cosine similarity over real document pairs FROM THE SAME CORPUS, stratified so each
+candidate is compared only against random pairs matched on its confounders — the
+unordered pair of domains and a coarse (median-split) length band. The candidate's
+own pair is excluded. p = (#{matched pairs with cos >= observed} + 1) / (n + 1),
+one-sided. This asks the right question: "more similar than typical comparable
+pairs?" It is featurizer-agnostic (reads only vectors), so real embeddings can
+replace TF-IDF later without changing the null.
+
+**Multiple testing.** Proposing many relations and testing each is a false-positive
+generator. We added Benjamini-Hochberg FDR (pure numpy) across the full tested
+family. ACCEPTED is assigned ONLY by the FDR pass — a single verifier reports a
+p-value and a provisional NULL/REJECTED; it cannot accept on its own.
+
+**Structure.** `RelationKind` enum + a fail-closed verifier registry: a candidate
+whose kind has no registered verifier RAISES (no silent fallback to proximity),
+making "no relation kind without its own null" structural, mirroring "no hypothesis
+without verification". MVP registers exactly `PROXIMITY`.
+
+**Result (deterministic; exhaustive null, no RNG).** Corpus: 40 real arXiv
+abstracts, two domains (astro-ph.CO, q-bio.NC). TF-IDF dim 676. 780 candidate
+pairs (all). Verdicts: 0 ACCEPTED, 311 NULL, 469 REJECTED, 0 INCONCLUSIVE. 34
+pairs are nominally significant (raw p<0.05); **0 survive BH-FDR** (all q=1.0).
+Highest-similarity cross-domain pair (`arXiv:2606.19452` ~ `arXiv:2606.16693`,
+cos=0.203, raw p=0.0093) is an honest NULL after FDR.
+
+**Interpretation.** This is the correct, honest outcome, not a failure. The old
+invalid null would have manufactured ~34 "significant" links; the valid null + FDR
+rejects them. There is also a structural fact worth recording: an empirical
+same-corpus pair null has a p-value floor of ~1/(stratum size) ≥ 1/(#pairs), while
+BH's rank-1 threshold is α/(#pairs); since the floor exceeds that threshold,
+**testing all pairs with an empirical null can essentially never accept** — the
+null's resolution cannot outpace the multiple-testing burden. Per the project's
+no-tuning rule, thresholds were NOT adjusted to manufacture a survivor.
+
+**Decision:** keep this as the honest MVP. A *usable* discovery setting needs a
+pre-registered, hypothesis-driven candidate set (so #tests ≪ stratum size) or a
+null whose resolution is independent of corpus size — the latter reintroduces the
+"smooth model" risk (rule 3) and is deferred. Mechanistic relation kinds remain
+unregistered (fail closed) until each has its own explicit null.
+
+---
+
 ### [YYYY-MM-DD] Hypothesis: <first scientific hypothesis>
 
 **Question:**

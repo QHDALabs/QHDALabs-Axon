@@ -61,6 +61,24 @@ class Document:
 # ─────────────────────────────────────────────────────────────────────────────
 # Stage 2 output — relational representation
 # ─────────────────────────────────────────────────────────────────────────────
+class RelationKind(str, Enum):
+    """
+    The kinds of relation Axon can propose between items.
+
+    Only ``PROXIMITY`` is implemented in the MVP. The rest are declared but left
+    WITHOUT a registered verifier, so a candidate of that kind fails closed at
+    verification (no relation kind ships without its own explicit null). They are
+    placeholders for later increments, not working features.
+    """
+
+    PROXIMITY = "proximity"               # implemented: lexical/distributional closeness
+    SAME_MECHANISM_AS = "same_mechanism_as"   # placeholder (fails closed)
+    SUPPORTS = "supports"                     # placeholder (fails closed)
+    CONTRADICTS = "contradicts"               # placeholder (fails closed)
+    ABC_BRIDGE = "abc_bridge"                 # placeholder (fails closed): Swanson A-B-C
+    MEASUREMENT_BRIDGE = "measurement_bridge" # placeholder (fails closed): quantum extra
+
+
 @dataclass(frozen=True)
 class CandidateRelation:
     """
@@ -73,8 +91,9 @@ class CandidateRelation:
     Fields:
       source_id : doc_id of one endpoint.
       target_id : doc_id of the other endpoint.
-      kind      : the relation type proposed (e.g. "proximity", "shared-term",
-                  "abc-bridge"). The verifier dispatches its criticism on kind.
+      kind      : the relation type proposed (a ``RelationKind``). Verification
+                  dispatches on kind via the registry, and fails closed if no
+                  verifier is registered for it.
       score     : the raw proposal strength (e.g. cosine similarity). NOT a
                   truth value and NOT a p-value — just the heuristic that
                   flagged this pair as worth criticising.
@@ -84,7 +103,7 @@ class CandidateRelation:
 
     source_id: str
     target_id: str
-    kind: str
+    kind: RelationKind
     score: float
     evidence: Mapping[str, object] = field(default_factory=dict)
     provenance: Sequence[str] = field(default_factory=tuple)
@@ -125,10 +144,14 @@ class VerificationResult:
       p_value       : significance against the null, if computed. None when the
                       verifier could not establish one (then verdict is usually
                       INCONCLUSIVE).
+      q_value       : Benjamini-Hochberg adjusted p-value (FDR) across the full
+                      set of tested candidates. None until the multiple-testing
+                      pass runs. ACCEPTED is assigned only by that pass — a single
+                      verifier cannot accept on its own.
       null_model    : human-readable description of the null/control used. An
                       empty string is a red flag: no stated null = not verified.
-      n_resolution  : resolution of the null estimate (e.g. permutation count).
-                      Low resolution → coarse p-value → prefer INCONCLUSIVE.
+      n_resolution  : resolution of the null estimate (e.g. number of eligible
+                      random pairs). Low resolution → coarse p-value → INCONCLUSIVE.
       reasoning     : short note on why this verdict, for the audit trail.
     """
 
@@ -136,6 +159,7 @@ class VerificationResult:
     verdict: Verdict
     statistic: float
     p_value: Optional[float] = None
+    q_value: Optional[float] = None
     null_model: str = ""
     n_resolution: Optional[int] = None
     reasoning: str = ""
