@@ -1,0 +1,322 @@
+[
+  {
+    "id": "2606.19452v1",
+    "source": "arXiv:2606.19452v1",
+    "domain": "astrophysics",
+    "category": "astro-ph.CO",
+    "title": "Validation of the Hybrid Bias Expansion model for the galaxy bispectrum",
+    "text": "The Hybrid Bias Expansion model (also known as Hybrid Effective Field Theory, HEFT) provides a promising way to extend the range of validity of perturbative large-scale structure modelling by replacing perturbative gravitational evolution with the nonlinear displacement field measured from $N$-body simulations. While this approach has already been shown to improve the modelling of the power spectrum, its validity at the bispectrum level has not yet been established. In this work we perform a first systematic real-space validation of the Hybrid bispectrum model using DESI-like LRG and ELG mock catalogues constructed at fixed cosmology on volumes similar to those of DESI's LRG samples. We find that the model remains self-consistent up to $k_{\\rm max}^B \\simeq 0.25\\,h\\,{\\rm Mpc}^{-1}$, while clear signs of breakdown appear for a similar EFT tree-level bispectrum approach at $k_{\\rm max}^B \\gtrsim 0.13\\,h\\,{\\rm Mpc}^{-1}$. We also show that adding matter cross-statistics significantly improves the precision of the recovered bias parameters, while a partial third-order extension including only the $δ^3$ operator does not extend the validity range. Finally, we find a strong hierarchy among the bispectrum basis terms when grouped by total bias-operator order, with the lowest-order sectors dominating the total amplitude, which has important implications in emulation strategies."
+  },
+  {
+    "id": "2606.19454v1",
+    "source": "arXiv:2606.19454v1",
+    "domain": "astrophysics",
+    "category": "astro-ph.CO",
+    "title": "Baryonic mass budgets in the central regions of the Bullet Cluster and their consistency with strong lensing in MOND",
+    "text": "Strong lensing observations of the Bullet Cluster have traditionally been regarded as strong evidence for dark matter and a major challenge to Milgromian dynamics (MOND). The offset between the lensing mass and the X-ray gas centroids implies a substantial amount of unseen mass near the brightest cluster galaxies (BCGs). However, the high metallicities observed in both the intracluster gas and the massive early-type member galaxies suggest a past stellar population dominated by massive stars, whose evolved remnants contribute additional baryonic mass. This effect is naturally incorporated in the integrated galaxy-wide initial mass function (IGIMF) theory, which predicts substantially larger baryonic masses than a canonical IMF. In this work, we re-estimate the baryonic masses of the three BCG-centred core regions of the Bullet Cluster and compare them with MOND strong-lensing masses. We derive IGIMF masses using stellar population synthesis models with constant and (self-) enriched metallicities, representing lower and upper mass limits, respectively. We find that the MOND strong-lensing masses of all three cores lie within the range predicted by the IGIMF models. These results suggest that the baryonic mass budget inferred under the IGIMF framework is consistent with MOND requirements in the core regions of the Bullet Cluster. However, the physical viability of this scenario also depends on the spatial distribution and dynamical behavior of the remnant population, which remain to be established. More generally, regardless of the validity of MOND, the results imply that less dark matter may be required than previously inferred."
+  },
+  {
+    "id": "2606.19459v1",
+    "source": "arXiv:2606.19459v1",
+    "domain": "astrophysics",
+    "category": "astro-ph.CO",
+    "title": "Fireworks at Cosmic Dawn: relieving BAO-CMB tensions with the Pop III.1 Flash",
+    "text": "A Cosmic Microwave Background (CMB) optical depth of $τ\\sim 0.09$, several $σ$ in excess of the latest Planck low-$\\ell$ EE polarization measurement, has been proposed as a way to reconcile the preference for a sub-minimal neutrino mass sum in a combined analysis with CMB and Dark Energy Spectroscopic Instrument (DESI) three-year data. Reionization, however, is not just probed by $τ$. It is also constrained by Ly$α$ forest observations that indicate a late end of reionization, and the patchy kinetic Sunyaev-Zel'dovich (pkSZ) effect which prefers a short duration. We explore whether an early phase of reionization can achieve a high $τ$ while remaining consistent with both Ly$α$ forest and pkSZ constraints. As a concrete example, we consider supermassive Pop III.1 stars, dark-matter-powered metal-free stars proposed as progenitors of supermassive black holes. Within this framework, self-regulating ionizing feedback imposes a minimum source separation of $\\sim 1 \\, \\text{cMpc}$, consequently limiting large-scale ionization fluctuations and reducing the pkSZ power on observationally relevant scales. Our fiducial model realizes an optical depth of $τ= 0.087$ with a Pop III.1-driven flash ionization phase centered at $z = 20$, while evading the most conservative $2σ$ upper limits on the pkSZ signal from the most recent South Pole Telescope data release. More broadly, our findings motivate further exploration of early reionization models with weakly clustered sources as a possible resolution of tensions between BAO and CMB measurements."
+  },
+  {
+    "id": "2606.19472v1",
+    "source": "arXiv:2606.19472v1",
+    "domain": "astrophysics",
+    "category": "astro-ph.CO",
+    "title": "Statistical Field Theory for Weak Gravitational Lensing",
+    "text": "Standard weak-lensing calculations treat lensing as a linear remapping of the matter field along the line of sight. We instead formulate lensing as a stochastic field theory for the Sachs optical scalars, driven by random Ricci-focusing and Weyl-shearing fields. The resulting path integral generates a diagrammatic expansion for arbitrary $n$-point correlation functions of lensing observables, organised into linear response, nonlinear propagation, and driving-field cumulants. The conventional calculation emerges as the lowest-order, linear-propagation limit. Beyond it, nonlinear Sachs evolution couples to driving-field non-Gaussianity, mixing the matter cumulant hierarchy into the lensing hierarchy. A selection rule governs the couplings: an $n$-point observable receives a direct contribution from the $n$-point driving-field cumulant, and its leading hierarchy-mixing correction from the $(n+1)$-point cumulant via one nonlinear Sachs interaction, with higher cumulants entering only at higher order. The two-point function, for instance, is corrected by squeezed three-point cumulants of Ricci focusing and Weyl shearing, letting small-scale modes source larger scales and feeding the lensing $E$- and $B$-modes equally. Rather than a restrictive approximation scheme, the formalism is a paradigm shift: a unified framework naturally accommodating path corrections, higher-order matter statistics, stochasticity, and small-scale effects."
+  },
+  {
+    "id": "2606.19480v1",
+    "source": "arXiv:2606.19480v1",
+    "domain": "astrophysics",
+    "category": "astro-ph.CO",
+    "title": "sft-wick: A formalism and package for Feynman-diagram expansion and evaluation in stochastic field theories",
+    "text": "When stochastic field dynamics are cast into a path-integral formulation, perturbation theory becomes systematic but the resulting expansion quickly grows combinatorially large. The setting targeted here includes multi-component, multi-dimensional fields with matrix propagators, tensor-valued couplings, and non-Gaussian driving noise specified by arbitrary $n$-point cumulants. Wick pairings grow factorially, and component indices must be routed through the tensor-valued vertices. The useful output is not a raw contraction list, but a diagram table: one entry per topology, with multiplicities, coupling sums, signs, and causal constraints resolved. We present sft-wick, an open-source Python package that constructs these diagram tables and computes their integrals numerically. Given an action and an observable, it enumerates topologically distinct Feynman diagrams, derives their algebraic coefficients, and evaluates the resulting diagram integrals from user-supplied response and cumulant functions. The core algorithm enumerates spatial topologies before routing component indices, avoiding contraction-by-contraction Wick expansion. Response-field constraints, including vanishing response-response contractions, the ito prescription, and the absence of causal response loops, are enforced during enumeration. Predictions are validated against direct Langevin simulation, agreeing to within the simulation's statistical noise."
+  },
+  {
+    "id": "2606.19513v1",
+    "source": "arXiv:2606.19513v1",
+    "domain": "astrophysics",
+    "category": "astro-ph.CO",
+    "title": "Reheating as a variational probe of cosmological observables",
+    "text": "We formulate reheating as a constrained variational problem in the space of equation-of-state histories, rather than attempting to describe it through microscopic models. We introduce a regularized functional framework that identifies reheating histories which extremize a given cosmological observable under minimal physical assumptions. As illustrative applications, we consider prompt gravitational waves, induced gravitational waves, and primordial black holes. We find that different observables select qualitatively different regions of reheating-history space. These examples demonstrate that cosmological observables define distinct extremal directions in reheating-history space and can therefore be used to systematically explore the space of post-inflationary expansion histories."
+  },
+  {
+    "id": "2606.19518v1",
+    "source": "arXiv:2606.19518v1",
+    "domain": "astrophysics",
+    "category": "astro-ph.CO",
+    "title": "Increasing the sensitivity of full-shape galaxy clustering measurements in configuration-space with three-point statistics",
+    "text": "We investigate the cosmological constraining power of a compressed line of sight dependent three point correlation function (3PCF) estimator on small scales (<80 Mpc/h) in configuration space, with a particular focus on emission line galaxies (ELGs) targeted by the Nancy Grace Roman Space Telescope's Galaxy Redshift Survey (GRS), and complementary luminous red galaxy (LRG) samples observed by the Dark Energy Spectroscopic Instrument (DESI). These scales avoid the baryon acoustic oscillation (BAO) feature and are therefore expected to provide information that is largely complementary to standard BAO measurements, while retaining partial overlap with full shape clustering analyses. Our forecasts are based on AbacusSummit simulations at z = 1.1 and z = 0.8, populated with galaxies using halo occupation distribution (HOD) models matched to Roman ELG and DESI LRG samples respectively. The three point measurements are computed with TriCo, a fast configuration space triangle counting code developed for this analysis. After marginalizing over uncertainties in the galaxy halo connection, we find that incorporating the 3PCF yields a substantial improvement over two point statistics alone, tightening the constraint on sigma_8 by a factor of 5 in our fiducial forecast. This gain arises not from a localized feature or specific scale range, but from the cumulative information content across triangle configurations. Restricting to the monopole of the 3PCF captures only part of this information, with the full line of sight dependent measurement providing an additional factor of 2 to 3 improvement over the monopole. Adding line of sight dependent three point information substantially increases the constraining power of small scale configuration space galaxy clustering."
+  },
+  {
+    "id": "2606.19709v1",
+    "source": "arXiv:2606.19709v1",
+    "domain": "astrophysics",
+    "category": "astro-ph.CO",
+    "title": "Enhancing the Detection Sensitivity of Primordial Parity Violation using Galaxy Spins",
+    "text": "It has been recently demonstrated that the signature of primordial parity violation could be imprinted in halo spins, indicating its potential detectability through the late-time galaxy spin field (Shim et al. 2025). In this study, we develop an optimized halo selection strategy to enhance the detection significance of such a signal, focusing on halo mass and local density. Using N-body simulations with parity-asymmetric initial conditions, we show that the optimized halo sample allows for a higher detection sensitivity than the full halo sample, despite its reduced sample size. Finally, we assess the observational feasibility of our strategy and show that future spectroscopic surveys can provide sufficient data to realize this enhanced sensitivity."
+  },
+  {
+    "id": "2606.19722v1",
+    "source": "arXiv:2606.19722v1",
+    "domain": "astrophysics",
+    "category": "astro-ph.CO",
+    "title": "The stability of voids in the local Universe: the role of the cosmological constant",
+    "text": "The Vlasov kinetic formalism is employed to study the evolution and stability of cosmic voids in the local Universe, taking into account not only gravitational attraction but also the repulsive effect of the cosmological constant (local dark energy). In accordance with the theorem on the general function for the identity between the gravitational fields of a sphere and a point mass, the cosmological constant provides a natural explanation for the Hubble tension as arising due to local and global flows characterized by different Hubble parameters. The crucial role of the Λ-repulsion in maintaining the stability of voids at the present epoch is demonstrated when Landau damping suppresses discrete collapse modes and prevents random local density perturbations inside the voids from growing and involving new galaxies to the walls. Inside the voids, the Λ-repulsion exceeds the attractive force of the residual matter, driving matter outward and accelerating its migration toward the void boundaries. In the local (late) Universe, cosmic voids have entered a stage characterized by stable and more pronounced walls, as can be studied by observational surveys across different redshift ranges."
+  },
+  {
+    "id": "2606.19757v1",
+    "source": "arXiv:2606.19757v1",
+    "domain": "astrophysics",
+    "category": "astro-ph.CO",
+    "title": "Graviton Floor",
+    "text": "It has been observed that the Universe is permeated by the cosmic photon background, ranging from radio waves to gamma rays. We investigate the conversion of the photon background into gravitons in the presence of background magnetic fields in the Milky Way Galaxy and in blazar jets. We find that the resulting graviton background is dominated by the contribution generated in blazar jets. Importantly, this graviton background constitutes a graviton floor for high-frequency gravitational wave detectors searching for new physics, analogous to the neutrino floor."
+  },
+  {
+    "id": "2606.19837v1",
+    "source": "arXiv:2606.19837v1",
+    "domain": "astrophysics",
+    "category": "astro-ph.CO",
+    "title": "Is dark matter decaying ?",
+    "text": "An enduring signature of the decay of unstable dark matter constituents into other particles would manifest as a measurable discrepancy in the matter density parameter (Omega_m) between the recombination era (z ~ 1000) and the local Universe (z = 0). While precision measurements of the Cosmic Microwave Background tightly constrain the initial matter budget, evaluating this decay hypothesis requires an equally precise audit of the current epoch. We find that current local inventories of baryonic and dark matter are subject to systematic uncertainties - particularly in accounting for the warm-hot intergalactic medium, diffuse intra-cluster media, and the exact profiles of low-mass dark matter halos - rendering a definitive verdict on late-time dark matter decay currently hard to pin down. Furthermore, existing astrophysical bounds on cosmic rays, the diffuse gamma-ray background, and reionization history already heavily constrain potential decay channels during this epoch. However, next-generation observational technology is poised to resolve these local accounting gaps. Upcoming high-resolution spectroscopic surveys, next-decade X-ray missions, and advanced weak lensing campaigns will drastically reduce baryon and mass-mapping uncertainties, transforming the late-time matter audit into a cleaner, more definitive test."
+  },
+  {
+    "id": "2606.19995v1",
+    "source": "arXiv:2606.19995v1",
+    "domain": "astrophysics",
+    "category": "astro-ph.CO",
+    "title": "Finite-Core Signatures in LISA-Band Wave-Optics Lensing by Low-Mass Dark Matter Halos",
+    "text": "LISA-band gravitational waves from massive binary black holes can be diffractively lensed by low-mass dark matter halos and subhalos, so their frequency-dependent amplification can probe the inner density profile. We isolate the generic finite-core part of this signal by comparing fixed-mass Navarro-Frenk-White (NFW) and cored-NFW lenses and propagating both profiles to the complex wave-optics amplification factor. A finite core smooths the time-delay response and reshapes the diffraction peak; an NFW template with a lower concentration can mimic part of the effect, but structured complex residuals remain after time and phase alignment. The residual peaks for intermediate cores, $r_c/r_s\\simeq0.25$--$0.3$. An SIDM-inspired isothermal-core profile gives the same qualitative response, showing that the signal is not an artifact of one cored parameterization. For a fiducial LISA source, an appreciable mismatch requires favorable near alignment and $M_{\\rm vir}\\gtrsim 10^7M_\\odot$. The result is a finite-core baseline for isolated line-of-sight halos and for subhalos perturbing strongly lensed macro-images."
+  },
+  {
+    "id": "2606.20036v1",
+    "source": "arXiv:2606.20036v1",
+    "domain": "astrophysics",
+    "category": "astro-ph.CO",
+    "title": "Evolving Dark Energy Is Vacuum Energy After All",
+    "text": "We investigate a physically motivated model of dynamical dark energy arising from the non-perturbative topological structure of the Quantum Chromodynamics (QCD) vacuum. Unlike conventional dark-energy scenarios, the model does not introduce any new fundamental field or propagating degree of freedom. Instead, the dark-energy density emerges as a global vacuum effect associated with the response of the QCD vacuum to an expanding spacetime, representing a possible paradigm shift in the interpretation of cosmic acceleration. We develop the first comprehensive cosmological implementation of this QCD-induced dark-energy scenario and confront it with current observations, including the latest combination of Planck, ACT and SPT-3G cosmic microwave background measurements, DESI DR2 baryon acoustic oscillation data, and Type Ia supernova samples from Pantheon+ and DES-Dovekie. We compare the model with both the standard $Λ$CDM cosmology and the widely used CPL ($w_0w_a$CDM) parametrization of evolving dark energy. We find that the model provides an excellent fit to the data and reproduces the late-time dark-energy evolution preferred by DESI observations. The inferred cosmological parameters are robust against different implementations of the dark-energy activation mechanism, indicating that the cosmological predictions are largely insensitive to the specific form of the transition. The model naturally predicts an effective phantom-crossing behaviour at intermediate redshifts while remaining free from the theoretical instabilities commonly associated with phantom scalar-field models. Using a combination of goodness-of-fit statistics and Bayesian model-selection techniques, including Akaike and Deviance Information Criteria and Bayesian evidence estimated from Markov Chain Monte Carlo chains, [abridged]"
+  },
+  {
+    "id": "2606.20171v1",
+    "source": "arXiv:2606.20171v1",
+    "domain": "astrophysics",
+    "category": "astro-ph.CO",
+    "title": "High-accuracy polarimetry for CMB: new frontiers with the POLOCALC project",
+    "text": "Modern telescopes observing the Cosmic Microwave Background (CMB) polarization require an exquisite control of systematics to target Inflationary Gravitational Waves (IGW), Cosmic Birefringence (CB), and Primordial Magnetic Fields (PMF). The absolute polarization angle of the detectors is a critical parameter to disentangle the $E$-modes and $B$-modes of the CMB, allowing a correct detection of primordial $B$-modes as well as testing Cosmic Birefringence theories. To this end, we discuss the current status of the POLOCALC project, an ERC Advanced Grant that aims to develop air-borne calibration sources for CMB small-aperture telescopes. The main scientific objective of POLOCALC is to enable a direct calibration of the absolute polarization angle of CMB polarimeters with an accuracy of $0.01 \\degree $. We present the latest developments regarding the calibration source, the calibration strategies designed to use drone-based calibrators, and the application to modern ground-based experiments."
+  },
+  {
+    "id": "2606.20392v1",
+    "source": "arXiv:2606.20392v1",
+    "domain": "astrophysics",
+    "category": "astro-ph.CO",
+    "title": "Phase Transitions and Gravitational Wave Production at the End of Thermal Inflation",
+    "text": "We investigate the first-order phase transition that terminates thermal inflation and evaluate the associated stochastic gravitational-wave signals. The transition is first characterized through semi-analytic calculations of the bounce action, which are compared with numerical results obtained using CosmoTransitions. We then study its real-time evolution in a three-dimensional Langevin lattice simulation that incorporates Hubble expansion and the corresponding temperature evolution throughout the transition. The lattice dynamics are consistent with the bounce-action estimates: the transition proceeds through localized bubble nucleation and subsequent bubble growth, rather than through a phase-mixing instability. Using the resulting transition parameters, we estimate the gravitational-wave spectra generated by bubble collisions and acoustic motions in the plasma. The predicted stochastic background lies within the projected sensitivity ranges of future gravitational-wave observatories, including BBO and DECIGO."
+  },
+  {
+    "id": "2606.20393v1",
+    "source": "arXiv:2606.20393v1",
+    "domain": "astrophysics",
+    "category": "astro-ph.CO",
+    "title": "New Gauge Forces, Neutron Stars and Schwinger Neutrino Production",
+    "text": "We investigate neutrino effects of new long-range forces arising from gauging $B-L$, $L_e-L_{μ/τ}$ or $L_μ-L_τ$ symmetries of the Standard Model. The leptonic potential generated by astronomical bodies, such as the Earth, the Sun or a neutron star, results in the Schwinger pair production of neutrinos charged under the new gauge symmetry. The oppositely charged particles accumulate in the potential well forming a degenerate Fermi gas, while equally charged particles fly away forming a steady flux of neutrinos. We find that, for the $B-L$ and $L_e-L_{μ/τ}$ forces, these effects are too weak to be observable. For the $L_μ-L_τ$ force these effects are significant in neutron stars if the gauge coupling is $g\\gtrsim 10^{-18}$. The muonic force changes the element abundances of a neutron star in equilibrium and suppresses its $L_μ-L_τ$ charge. This invalidates the constraint on $g$ from neutron star mergers, at $g\\gtrsim 10^{-17}$. Furthermore, for such values of $g$, the neutrino flux produced by the Schwinger effect could potentially be detected from a single young neutron star at a distance of $\\simeq 100$ pc, with the typical neutrino energy $E_ν\\sim 100$ MeV. A dedicated search for such a signal will reassert the bound $g\\lesssim 10^{-18}$."
+  },
+  {
+    "id": "2606.20434v1",
+    "source": "arXiv:2606.20434v1",
+    "domain": "astrophysics",
+    "category": "astro-ph.CO",
+    "title": "The Hubble tension: A decade review",
+    "text": "Ever since the new millennium, precision cosmology has forged the $Λ$-cold-dark-matter ($Λ$CDM) model as the standard model of concordant cosmology, withstanding various tests except for an ever-enlarging discrepancy between early-Universe observations and late-Universe measurements on the current Hubble expansion rate of our observable Universe. This Hubble-constant tension has likely become a real crisis for modern cosmology, with the discrepancy persisting regardless of whether the early-Universe observations depend on \\textit{Planck} CMB or not, and the late-Universe measurements depend on distance ladders at all. If the Hubble tension originates from a different early Universe, its resolutions pertain to shrinking the sound horizon by altering either early expansion or recombination histories, but at the same time necessitating modifications to both primordial and late Universe altogether. Alternatively, if the Hubble tension arises from a different late Universe, its resolutions operate by changing the absolute magnitude of supernovae either intrinsically or effectively, both of which have been strongly constrained by the inverse distance ladders with the cosmic distance duality relation. The remaining options seem to turn to our local Universe, but a local Hubble bubble or cosmic void solution has long been ruled out as a significant contribution to the Hubble tension. In view of this dilemma, we review in this paper alternative resolutions involving interacting dark energy models, either combining early-time and late-time modifications or operating at the transition from inhomogeneity to homogeneity scales."
+  },
+  {
+    "id": "2606.20471v1",
+    "source": "arXiv:2606.20471v1",
+    "domain": "astrophysics",
+    "category": "astro-ph.CO",
+    "title": "The impact of FRB dispersion measure probability distribution functions on cosmographic estimates",
+    "text": "Recent cosmological observations have reopened the discussion about the model that best describes the dynamics of the Universe, highlighting the need for cosmological model-independent analyses. In this paper, we utilize the cosmographic approach applied to a robust sample of 106 well-localized Fast Radio Bursts (FRBs) within the redshift range $z \\le 0.7$ to constrain the Hubble constant $H_0$, the deceleration parameter $q_0$, and the jerk parameter $j_0$. Our primary goal is to assess the impact of intergalactic medium (IGM) inhomogeneities on cosmographic parameter estimation. To this end, we consider the statistical behavior of these parameters under two distinct functional forms for the IGM dispersion measure ($\\mathrm{DM_{IGM}}$) probability density function (PDF): a Gaussian distribution (Distribution I) and a quasi-Gaussian distribution (Distribution II) that accounts for the skewed structure of cosmic large-scale environments along the lines of sight. We further investigate the role of the baryon mass fraction by considering both fixed and free-parameter scenarios. We find that the inferred cosmographic constraints, particularly those on $q_0$, depend sensitively on both the assumed IGM distribution and the adopted parameter priors."
+  },
+  {
+    "id": "2606.20486v1",
+    "source": "arXiv:2606.20486v1",
+    "domain": "astrophysics",
+    "category": "astro-ph.CO",
+    "title": "Cosmological history after higher dimensional inflation",
+    "text": "It was proposed that extra dimensions can acquire large size by higher dimensional inflation connecting two large hierarchies in particle physics and cosmology, namely the weakness of the actual gravitational force to the largeness of the observable universe, in terms of one fundamental scale. This proposal is consistent with the observed approximate scale invariant power spectrum of primordial density perturbations only for one or two extra dimensions of around the micron size. Assuming a stabilisation mechanism of the extra dimensions at the end of inflation, here we propose a cosmological history that describes the Universe evolution after the end of inflation up to the reheating temperature, that guarantees the absence of bulk gravitons at earlier times, avoiding their overproduction in the early universe. The proposed cosmological history connects the period of higher dimensional inflation to the beginning of the standard cosmology."
+  },
+  {
+    "id": "2606.20524v1",
+    "source": "arXiv:2606.20524v1",
+    "domain": "astrophysics",
+    "category": "astro-ph.CO",
+    "title": "String Axiverse Enhancement of Superradiant Dark Matter Production",
+    "text": "We study the effects of string axion emission on dark matter production by light primordial black holes (PBHs), through both evaporation and superradiance. We show, in particular, that the Hawking emission of $\\mathcal{O}(100-10^5)$ light axion species predicted in realistic string theory constructions can significantly enhance the efficiency of superradiance, given the associated increase in the PBH spin. The string axiverse thus significantly expands the parametric regions (dark matter mass and PBH mass and spin) for which a sizeable fraction of dark matter may presently be in the form of ``micro-boson stars'': the self-gravitating remnants of superradiant dark matter clouds. Conversely, for too large a number of axion species PBHs evaporate too quickly for superradiant clouds to attain their maximum mass. Finally, assuming that all dark matter is produced by PBHs (through both superradiance and Hawking emission), we show that the axions emitted during PBH evaporation give an immeasurably small contribution to the relativistic degrees of freedom at recombination."
+  },
+  {
+    "id": "2606.14649v1",
+    "source": "arXiv:2606.14649v1",
+    "domain": "neuroscience",
+    "category": "q-bio.NC",
+    "title": "Prospective Coding and Path Integration Emerge as Equilibrium Solutions of Self-Organizing Neural Networks with Firing-Rate Adaptation",
+    "text": "Continuous Attractor Neural Networks (CANNs) traditionally rely on pre-wired recurrent connectivity to model spatial representations, path integration, and anticipatory dynamics. However, the biological mechanisms through which this structured connectivity emerges via learning remain relatively unexplored. This work presents a theoretical framework revealing how continuous attractor connectivity and its computational properties self-organize through Hebbian plasticity, firing-rate adaptation, and global inhibition. We show that translationally invariant inputs naturally drive the emergence of stable, Gaussian-profiled feedforward weights. Crucially, anticipatory dynamics arise spontaneously within these feedforward architectures, shifting the activity bump forward without requiring recurrent excitatory collaterals. This predictive shift can be linearly amplified across multilayer networks, consistent with anticipatory activity observed in the superficial layers of the entorhinal cortex. Furthermore, introducing recurrent interactions allows the network to learn connections capable of self-sustaining a moving bump of activity. Finally, by modulating the network with an external, time-varying baseline current that encodes speed, the system adjusts its intrinsic velocity to function as a precise unidirectional path integrator. Ultimately, this study suggests that prospective coding and path integration are not manually engineered features, but rather naturally co-emergent properties of a single self-organizing competitive network."
+  },
+  {
+    "id": "2606.14692v1",
+    "source": "arXiv:2606.14692v1",
+    "domain": "neuroscience",
+    "category": "q-bio.NC",
+    "title": "Implications of hierarchical Markov models of behavior: on irreversibility, predictability, and dimensionality",
+    "text": "The maturation of quantitative tools for studying the high-level structure of animal behavior, and especially tools which represent spontaneous behavior as a sequence of stereotyped and neurally well-defined 'syllables', demands that the field revisit a fundamental theoretical question: if the coarse structure of behavior can be accurately described by Markov models, what do these models really tell us about behavior? In this work, we explore the theoretical implications of these models and discuss how they allow us to quantitatively formulate questions about the sequence-like nature and effective dimensionality of behavior. One important insight is that the eigenvalues and eigenvectors of various model-associated matrices furnish interpretable time scales and modifications of behavior that occur on those time scales. We illustrate our points using both toy examples and Markov models fit to real data. By analyzing the consequences of Markov representations, we clarify the theoretical meaning of progress in quantifying behavior."
+  },
+  {
+    "id": "2606.14975v1",
+    "source": "arXiv:2606.14975v1",
+    "domain": "neuroscience",
+    "category": "q-bio.NC",
+    "title": "Harnessing cortical geometry, wiring, and function as inductive biases for recurrent neural networks",
+    "text": "How the wiring and functional organization of cortex shape recurrent computation remains a central question in both neuroscience and machine learning. Here, we leverage data released through the Machine Intelligence from Cortical Networks (MICrONS) program--a functional connectomics resource spanning multiple areas of mouse visual cortex, in which dense calcium imaging is co-registered with high-resolution electron microscopy reconstruction from the same animal--to build biologically grounded recurrent neural networks. Using neuronal spatial coordinates, anatomical connectivity, and function-derived relationships from nearly 12,000 coregistered excitatory neurons, we initialize recurrent weights and impose communication-aware spatial constraints during learning. Across three cognitive decision-making tasks, networks constrained by cortical structure and function consistently outperform baseline and partially constrained models. Functional weight initialization provides the largest gain, while real spatial embedding yields robust additional improvements across conditions. These biologically grounded networks also develop low-entropy, modular, and small-world organization, and retain strong performance even when recurrence is restricted to positive weights. Together, our results show that the machinery of cortex--its geometry, wiring, and functional structure--can be harnessed as a powerful inductive basis for building recurrent networks that learn more effectively while converging toward key organizational principles of biological computation."
+  },
+  {
+    "id": "2606.15192v1",
+    "source": "arXiv:2606.15192v1",
+    "domain": "neuroscience",
+    "category": "q-bio.NC",
+    "title": "OpTI-Mouse: Optimization for Targeted Temporal Interference Stimulation in the Mouse Brain",
+    "text": "Temporal Interference (TI) stimulation enables deep brain targeting, yet precise optimization tools for mouse models remain limited. We developed a computational optimization tool integrating mouse head modeling with the optimization algorithm to optimize stimulation strategies for predefined target regions. By balancing target intensity and spatial focality, the optimized strategy significantly outperformed empirical baselines. For the CA3-CA1 target, it achieved a 7-fold intensity increase (10.29 vs. 2.89 V/m) under iso-focality conditions. Conversely, for the Dentate Gyrus, it improved spatial confinement ($r_{0.5}$ reduced from 3.99 to 3.54 mm) while maintaining comparable intensity. Cross-model validation on a standardized Sim4Life phantom further confirmed the framework's robustness. This approach offers a powerful tool for enhancing the precision and reproducibility of preclinical TI stimulation studies."
+  },
+  {
+    "id": "2606.15348v1",
+    "source": "arXiv:2606.15348v1",
+    "domain": "neuroscience",
+    "category": "q-bio.NC",
+    "title": "Intrinsic Computational Functionalism and Simulated Consciousness",
+    "text": "A common objection to artificial or simulated consciousness is that a simulated brain is no more conscious than simulated water is wet. We address this from the perspective of Intrinsic Computational Functionalism (ICF): if consciousness is computationally constituted, it depends not on externally imposed descriptions but on the computational structures a system physically realizes in virtue of its own causal-dynamical organization. In previous work we developed Canonical Functionalism as a mathematically precise special case of this anti-interpretivist program, identifying functional states by their complete future input-output roles under a fixed interface. Here we argue that this input-output construction, though important, is incomplete: as a behavioral boundary case of ICF, it makes lookup tables and unfolded systems that preserve the same boundary behavior canonically equivalent. A consciousness-relevant canonical representation must instead include internal mechanisms, interventions, and joint readouts belonging to the relevant intrinsic organization. We therefore define a mechanism-enriched canonical structure and use it to formulate Intrinsic Causal-Computational Realization (ICCR), a realization relation preserving physical implementation, intrinsic state individuation, transition structure, intervention profiles, and the relevant agent-body-world boundary. The central result is conditional: if conscious properties are invariants of intrinsic causal-computational organization, then any system satisfying ICCR realizes the same consciousness-relevant properties, whether biological, artificial, or simulated. We discuss objections including biological naturalism and integrated information theory. We conclude that to deny consciousness to a simulation, one must identify a consciousness-relevant intrinsic causal-computational structure that the simulation fails to realize."
+  },
+  {
+    "id": "2606.15989v1",
+    "source": "arXiv:2606.15989v1",
+    "domain": "neuroscience",
+    "category": "q-bio.NC",
+    "title": "Task-guided cross-subject latent alignment: a multi-encoder-decoder VAE",
+    "text": "Aligning neural activity across subjects offers the promise of discovering shared computational principles and generalizable decoders. However, traditional alignment methods require shared stimuli across subjects, a constraint that limits applicability to naturalistic paradigms with limited or non-overlapping data. We introduce a Multi-Encoder-Decoder Variational Autoencoder (MED-VAE) that achieves cross-subject alignment without shared stimuli by anchoring representations to a common scaffold provided by a pretrained ANN. Using the Natural Scenes Dataset, we show that MED-VAE creates common latent spaces with superior semantic organisation, achieving higher cross-subject alignment than common methods while maintaining robust generalisation to held-out stimuli where traditional methods degrade. Reconstructing from these common spaces back to each subject's original neural space, MED-VAE preserves equal stimulus-driven signal in its cross-subject latent space. Finally, we show that this superior alignment directly enables cross-subject neural prediction, as demonstrated via cross-subject image decoding. In summary, we introduce a framework to identify generalisable common subspaces for cross-subject predictions and downstream tasks, demonstrated here for visual cortex responses to static images."
+  },
+  {
+    "id": "2606.16041v1",
+    "source": "arXiv:2606.16041v1",
+    "domain": "neuroscience",
+    "category": "q-bio.NC",
+    "title": "EEGDash: An open-source platform for machine learning on public neurophysiological data",
+    "text": "Public neurophysiological datasets are increasingly accessible but remain hard to reuse: turning one into a trained model still takes thousands of lines of code for download, loading, format repair, windowing, and evaluation, and a dataset that meets metadata standards can still fail to load. EEG-Dash is a software resource that catalogues 791 publicly archived recordings (39,778 participants, over 86,051 hours) spanning electroencephalography (EEG), magnetoencephalography (MEG), intracranial EEG (iEEG), electromyography (EMG), and functional near-infrared spectroscopy (fNIRS) from the OpenNeuro and NEMAR archives. It exposes each dataset as an importable, queryable class that preserves signal attributes and loads into machine-learning workflows without custom code, delegating signal handling to MNE-Python, windowing to Braindecode, and format compliance to the official Brain Imaging Data Structure (BIDS) validator. A metadata-first registry adds semantic search, a format-repair layer, automatic dataset-level tags drawn from each source publication, and a feature-extraction framework. The catalogue, with per-record loadability and compliance metadata, supports benchmarking, model development, and cross-dataset analysis."
+  },
+  {
+    "id": "2606.16294v1",
+    "source": "arXiv:2606.16294v1",
+    "domain": "neuroscience",
+    "category": "q-bio.NC",
+    "title": "Sex-based Network-Specific Differences in Connectomes: A Krakencoder-Based Analysis",
+    "text": "This study examines how deficiencies in one brain connectome modality propagate to the other, using the Krakencoder as a simulation framework. Structural and functional connectomes from 702 healthy participants in the Human Connectome Project were analyzed, with the impact of each of the Yeo-7 functional networks assessed separately. Seven scenarios were considered, each involving the removal of a single network while the remaining networks were preserved. The resulting perturbations in cross-modal predictions were quantified using three complementary metrics: KL divergence on eigenvalue spectra, Frobenius norm, and Wasserstein distance. In addition, the persistence of sex-specific information within the predicted connectomes was evaluated. Across all metrics and both prediction directions, the Default Mode Network produced the largest perturbations, whereas the Somatomotor network yielded the smallest. Sex differences in network-level perturbation signatures were subtle, with the best result being an accuracy of 66.09% from connectomes predicted under network-removal conditions. In contrast, connectomes predicted from intact inputs achieved substantially higher sex classification accuracy, reaching up to 84.76%. These findings confirm that full predicted connectomes retain considerably more sex-discriminative information than perturbation-derived signatures alone."
+  },
+  {
+    "id": "2606.16590v2",
+    "source": "arXiv:2606.16590v2",
+    "domain": "neuroscience",
+    "category": "q-bio.NC",
+    "title": "Infant Spontaneous Movement Noise Improves Exploration in Deep RL",
+    "text": "Exploration in deep reinforcement learning (RL) is commonly implemented as temporally uncorrelated white noise. However, recent works show that temporally correlated colored noise can improve exploration efficiency by producing smooth trajectories with better coverage of the state space. We inquire whether action noise inspired by infant spontaneous movements can also improve exploration in deep RL. We find that the power spectral densities of babies' end-effector velocities follow a colored noise process where the spectral exponent increases with age. Inspired by this developmental pattern, we introduce a mechanism that progressively increases the temporal auto-correlation of exploration noise during RL training, matching the infant statistics. Experiments across several RL environments show that infant-inspired noise produces structured exploratory behavior and can improve learning efficiency compared to conventional exploration strategies. These findings suggest that human motor and cognitive development can provide useful guidance for designing learning mechanisms in artificial agents. Our code is available at https://github.com/trieschlab/baby-noise-rl."
+  },
+  {
+    "id": "2606.16693v1",
+    "source": "arXiv:2606.16693v1",
+    "domain": "neuroscience",
+    "category": "q-bio.NC",
+    "title": "Learning Hybrid Biophysical Neuron Models with Neural ODEs",
+    "text": "Biophysical neuron models link measurements of neural activity to underlying cellular mechanisms. Yet, a central challenge is that the kinetics of many ion channels are poorly characterized, and practical simplifications -- omitting channels or reducing morphological detail -- introduce systematic gaps between model and biology. Bridging these gaps requires approaches that can flexibly discover unmodeled dynamics while preserving mechanistic interpretability. Here, we introduce a hybrid modeling framework that embeds neural ordinary differential equations into conductance-based biophysical models to capture unknown currents or mis-specified channel kinetics. By parameterizing the neural ODE in terms of voltage-dependent steady-state and time-constant functions, we recover interpretable gating dynamics directly from voltage recordings without assuming a functional form. We show that the hybrid model fits the gating kinetics of 2400 ion channel models and recovers unknown gating dynamics from single current-clamp recordings, generalizing to out-of-distribution stimulus regimes under realistic inputs and parameter misspecification. We also use our method to reduce a multicompartment model of a cortical neuron into a single-compartment hybrid model with a learned axial current, yielding up to an order of magnitude lower computational cost. Together, our results establish a plug-and-play framework for selectively replacing unknown components of conductance-based models with neural ODEs while preserving their mechanistic structure."
+  },
+  {
+    "id": "2606.16694v1",
+    "source": "arXiv:2606.16694v1",
+    "domain": "neuroscience",
+    "category": "q-bio.NC",
+    "title": "Adaptive inference and function vectors in deep transformers",
+    "text": "Transformers are widely used as a general-purpose substrate for learning complex correlations between a large collection of coupled variables, but their internal mechanisms have remained mysterious. We introduce a theory of a deep transformer as a mean-field interacting system that implements distributed inference, subject to constraints on communication, locality and depth. We show that such a system can exploit internal state representations ('function vectors') to infer a latent context variable at increasingly finer scales over its layers. In an in-context regression task, the theory predicts a non-trivial relationship between non-Gaussian, hierarchical structure in the latent context variable, and transformer depth. Predictions are tested using constrained linear attention transformers and demonstrate adaptive inference in deep architectures. Feedforward blocks and depth enable transformers to implement a much richer class of in-context learning algorithms than previously described."
+  },
+  {
+    "id": "2606.17456v1",
+    "source": "arXiv:2606.17456v1",
+    "domain": "neuroscience",
+    "category": "q-bio.NC",
+    "title": "Embodiment Shapes Rolling Behavior in a Multimodal Infant Model",
+    "text": "Rolling over is one of the earliest milestones in infant motor development, reflecting the emergence of coordinated, whole-body sensorimotor control. Here, we conduct a computational study of infant rolling using MIMo, a virtual infant embodiment equipped with proprioception and vestibular sensation. MIMo learns supine-to-prone rolls with reinforcement learning. Interestingly, the learned behaviors capture developmental trends and coordination patterns consistent with those reported in real infants, including improved performance and faster execution with age. Our results explain how infant capabilities and constraints can give rise to realistic behaviors in artificial agents, with a particular emphasis on how motor development is shaped by the changing body morphology. This work highlights the role of embodied computational models as a powerful tool for studying sensorimotor development."
+  },
+  {
+    "id": "2606.17736v1",
+    "source": "arXiv:2606.17736v1",
+    "domain": "neuroscience",
+    "category": "q-bio.NC",
+    "title": "Ten Years of the Stochastic Resonance Model of Tinnitus: From Phantom Perception to Adaptive Sensory Optimization",
+    "text": "Subjective tinnitus - the perception of sound in the absence of an external acoustic stimulus - remains one of the most debated phenomena in auditory neuroscience. In 2016, the stochastic resonance (SR) model was introduced as an alternative account of tinnitus-related neuronal hyperactivity, proposing that internally generated neural noise is adaptively upregulated to restore information transmission after hearing loss. Rather than interpreting increased spontaneous activity as maladaptive, the model reframed it as a functional mechanism that enhances signal detection near sensory thresholds, with tinnitus emerging as a side effect of adaptive sensory optimization. Over the past decade, this framework has evolved from a phenomenological hypothesis into a broader neurocomputational theory linking information theory, adaptive signal detection, multichannel auditory processing, and cross-modal plasticity. Computational modeling, large-scale clinical analyses, and animal experiments have provided converging support for key predictions, including improved detectability under specific noise conditions and frequency-specific phantom percepts. The framework has also inspired a therapeutic approach based on spectrally matched near-threshold noise stimulation and has recently been integrated into a unified account of auditory phantom perception that combines stochastic resonance, central gain, homeostatic plasticity, and predictive coding. This review provides a chronological overview of the development of the stochastic resonance model, summarizes major theoretical and empirical advances, and outlines future directions for mechanistic validation and clinical translation. By redefining tinnitus as a consequence of adaptive sensory computation, the model shifts the conceptual focus from pathological dysfunction toward principles of information optimization in neural systems."
+  },
+  {
+    "id": "2606.17742v1",
+    "source": "arXiv:2606.17742v1",
+    "domain": "neuroscience",
+    "category": "q-bio.NC",
+    "title": "BrainWorld: A Structural-Prior-Conditioned Generative Model for Whole-Brain 4D fMRI Dynamics",
+    "text": "Whole-brain 4D fMRI generation is valuable for modeling functional brain dynamics, yet existing fMRI foundation models mainly target representation learning and downstream prediction rather than conditional predictive generation. We introduce BrainWorld, a structural-prior-conditioned generative model for whole-brain 4D fMRI dynamics. BrainWorld uses sMRI as subject-level anatomical context to guide future fMRI generation, integrating structural information into the denoising process rather than treating it as a parallel modality. Evaluated on 22 datasets spanning diverse cohorts and brain states, BrainWorld generates stable 4D fMRI trajectories up to 400 frames, improves downstream performance through generated-example augmentation, and learns transferable multimodal representations that outperform baselines. Together, these results establish BrainWorld as a condition-aware generative framework for long-horizon brain dynamics modeling and multimodal representation learning."
+  },
+  {
+    "id": "2606.17745v1",
+    "source": "arXiv:2606.17745v1",
+    "domain": "neuroscience",
+    "category": "q-bio.NC",
+    "title": "Separating wiring-specific from statistical control of dynamics in a complete connectome",
+    "text": "Electron-microscopy reconstruction now yields complete synaptic wiring diagrams, or connectomes, of entire small brains, including the larval Drosophila, the first insect brain reconstructed in full. How far a wiring diagram alone fixes a circuit's activity, as opposed to the finer physiological detail it does not record, is debated. We run a complete connectome as a fixed, rate-based dynamical operator in which no single-neuron parameter is fitted, so that, at one fixed dynamical regime, the model's behavior reflects the wiring and its connection strengths rather than tuned single-neuron physiology, and compare it against a hierarchy of randomized networks that each preserve a coarser description of the wiring. The model's overall dynamical regime, how strongly and how richly it responds, is mostly statistical: networks keeping only the connectome's coarse wiring statistics reproduce it. The wiring beyond these statistics instead sets where activity travels and which circuits shape it. Sparse input is confined to a compact olfactory pathway that randomized networks flood, and the mushroom body, the insect learning center, takes an outsized role in the leading adjoint-side modes, the directions that weigh which neurons shape the recurrent dynamics. Coarse statistics set the regime; the precise pattern of connections sets the geometry, a separation that clarifies which connectome-based claims rest on wiring alone."
+  },
+  {
+    "id": "2606.18667v1",
+    "source": "arXiv:2606.18667v1",
+    "domain": "neuroscience",
+    "category": "q-bio.NC",
+    "title": "Can neurons speak? Semantic narration of vision at single-cell resolution",
+    "text": "Identifying what individual neurons encode in higher-order visual cortex is an open problem. Responses resist intuitive parameterization, and the deep-network embeddings used in their place are black boxes. Here, we introduce NEURRATOR, a framework that decodes spiking activity into free-form natural-language narration of the viewed scene at single-neuron resolution. A learned encoder maps spike trains from arbitrary subsets of simultaneously-recorded neurons into the patch-embedding space of a frozen CLIP, from which a multimodal language model and sparse autoencoder generates and validates a description with no language-side training. Applied to Neuropixel recordings of mouse visual cortex during natural-movie viewing, NEURRATOR narrates from thousands of neurons, singular cortical regions, local populations, or from a molecularly-defined cell-types. We use this property to (i) quantify how decoding fidelity scales with population size and cortical region, and (ii) \"neurrate\", in plain language, what individual neurons and genetically-tagged inhibitory cell-types contribute to visual representation. This recasts cell identity from a classification target into a functional probe of the visual system, providing a new unit of biological insights in neural systems."
+  },
+  {
+    "id": "2606.19081v1",
+    "source": "arXiv:2606.19081v1",
+    "domain": "neuroscience",
+    "category": "q-bio.NC",
+    "title": "Retrieval-Based Brain Decoding by Alignment, not Complexity",
+    "text": "A prominent theory in cognitive science suggests that concepts in the brain are organized as high-dimensional vectors, with semantic meaning captured by directions and relative angles in this space. Brain decoding is the effort of reconstructing or retrieving stimuli (or their representations) from neural activity and involves finding a function that approximates how the brain represents concepts. This motivates the investigation of contrastive objectives as biologically plausible candidates to reverse the brain loss function. In this work, we study how functional MRI (fMRI) activity can generally be mapped with the embedding spaces of foundation models in vision, language, and audio. Although neural computations are highly non-linear at the microscale, fMRI measurements average signals across space and time, further smoothed by noise, effectively linearizing the observable representation. Consistent with these views, our experiments across multiple datasets demonstrate that linear contrastive decoders consistently outperform ridge regression and standard non-linear alternatives, and that these results generalize across images, text, and sound. These findings indicate that decoding gains arise more from the choice of training objective than from architectural complexity, pointing to contrastive-linear models as a principled strategy for brain decoding."
+  },
+  {
+    "id": "2606.19739v1",
+    "source": "arXiv:2606.19739v1",
+    "domain": "neuroscience",
+    "category": "q-bio.NC",
+    "title": "Robust probabilistic measurement of structural-functional module consistency in infant brain development",
+    "text": "Brain network is commonly divided into modules for analyzing their functionally segregated roles for group-level analysis in neuroimaging studies. Here, we introduce stochastic modules within brain networks for a robust probabilistic measurement of structural-functional module consistency (SFMC) in a group of subjects. Specifically, a stochastic module can be regarded as the chance of a brain region across subjects potentially being assigned to a group-level sub-network, characterized as an assignment probability for this brain region. This novel method has two advantages for evaluating inhomogeneous modules in brain networks. The first is that it can robustly evaluate the consistency between brain structural and functional modules whose population sizes are not necessary the same, and the second is that it is able to take into account the inter-individual variability of the modules for the groups. Moreover, compared with the conventional structural-functional coupling approach, our stochastic module-based method reveals a more pronounced decline in the coupling between structure and function, indicating stronger developmental reorganization. Our results using the dataset from Baby Connectome Project (BCP) show that the SFMC decreases from 0 to 5 years old, and is greater in primary brain regions, such as visual areas, while lower in more advanced cognitive regions, including those related to attention, control, and default mode network."
+  },
+  {
+    "id": "2606.20096v1",
+    "source": "arXiv:2606.20096v1",
+    "domain": "neuroscience",
+    "category": "q-bio.NC",
+    "title": "Quadratic Forms for Measuring Geometric Trees in 3-dimensional Space",
+    "text": "Tree-like structures appear in many areas of science, and their shapes can help understand the underlying processes they drive or that give rise to them. By thinking of these structures as geometric graphs in $\\mathbb{R}^3$, we gain access to tools from computational geometry and topology to study them. In this paper, we adopt the theory of quadratic forms to measure the directional spread of geometric graphs, and we introduce the hexplot model -- equipped with a metric derived from the Fisher metric on the standard triangle -- to visualize, measure, and collect statistics."
+  },
+  {
+    "id": "2606.20345v1",
+    "source": "arXiv:2606.20345v1",
+    "domain": "neuroscience",
+    "category": "q-bio.NC",
+    "title": "Synchronization modes in bipartite oscillator networks",
+    "text": "Collective oscillations in neuronal systems often arise from interactions between excitatory and inhibitory populations rather than from recurrent coupling within a single ensemble. Motivated by the coexistence of strongly and partially synchronized regimes in such systems, we study the Kuramoto Sakaguchi model on a bipartite network. Despite its minimal structure, the model exhibits rich collective dynamics, including both continuous and discontinuous transitions from full synchrony to partial synchrony (PS). In the PS regime, global oscillations fail to entrain one of the two populations, whose oscillators display quasiperiodic dynamics with an average frequency that can significantly deviate from that of the global field, as observed in neuronal networks. We show that this PS state constitutes an example of self-organized quasiperiodicity, arising here in the canonical Kuramoto Sakaguchi model despite its purely linear global coupling."
+  }
+]
