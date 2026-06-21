@@ -17,7 +17,7 @@ cannot: feed it candidates and it raises.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Iterable, List
+from typing import Dict, Iterable, List
 
 from ..types import Hypothesis, Verdict, VerificationResult
 
@@ -33,7 +33,7 @@ class SurfaceReport:
     """
 
     hypotheses: List[Hypothesis]
-    counts: dict
+    counts: Dict[str, int]
 
 
 def _require_verified(item: object) -> VerificationResult:

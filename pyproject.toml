@@ -42,3 +42,21 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+# ── Static typing (config-as-code: identical locally and in CI; CI runs `mypy src`) ──
+# Axon is fully type-checked: the verification-before-discovery contract becomes a
+# STATIC guarantee, not just a runtime one. src-layout is made visible to mypy so the
+# package resolves as `axon`, not `src.axon`.
+[tool.mypy]
+python_version = "3.12"
+mypy_path = "src"
+explicit_package_bases = true
+namespace_packages = true
+strict = true
+warn_unused_configs = true
+
+# qhda-core is consumed as a dependency and ships no type stubs. Ignore ITS missing
+# types narrowly, per-module — never globally — so Axon's own code stays fully checked.
+[[tool.mypy.overrides]]
+module = "qhda_core.*"
+ignore_missing_imports = true

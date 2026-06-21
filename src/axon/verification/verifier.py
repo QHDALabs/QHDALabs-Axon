@@ -21,7 +21,7 @@ permutation null and can reject.
 
 from __future__ import annotations
 
-from typing import Protocol
+from typing import Iterable, Protocol
 
 import numpy as np
 
@@ -158,7 +158,7 @@ class PermutationVerifier(Verifier):
 
 
 def verify_all(
-    candidates, verifier: Verifier, context: VectorContext
+    candidates: Iterable[CandidateRelation], verifier: Verifier, context: VectorContext
 ) -> list[VerificationResult]:
     """
     Run a verifier over many candidates. Convenience for the pipeline.
