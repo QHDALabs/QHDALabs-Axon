@@ -12,10 +12,10 @@ is intentionally left unregistered, so proposing one fails closed.
 
 from __future__ import annotations
 
-from typing import Dict, FrozenSet, Iterable, List
+from typing import Any, Dict, FrozenSet, Iterable, List
 
-from ..types import CandidateRelation, RelationKind, VerificationResult
-from .verifier import CorpusContext, Verifier
+from ..types import RelationCandidate, RelationKind, VerificationResult
+from .verifier import Verifier
 
 
 class NoVerifierError(LookupError):
@@ -46,9 +46,9 @@ class VerifierRegistry:
 
 
 def verify_all(
-    candidates: Iterable[CandidateRelation],
+    candidates: Iterable[RelationCandidate],
     registry: VerifierRegistry,
-    context: CorpusContext,
+    context: Any,
 ) -> List[VerificationResult]:
     """
     Verify many candidates, dispatching each to its kind's verifier.

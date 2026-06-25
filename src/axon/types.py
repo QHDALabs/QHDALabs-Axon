@@ -22,7 +22,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Mapping, Optional, Sequence
+from typing import Mapping, Optional, Sequence, Union
 
 import numpy as np
 
@@ -109,6 +109,45 @@ class CandidateRelation:
     provenance: Sequence[str] = field(default_factory=tuple)
 
 
+@dataclass(frozen=True)
+class BridgeCandidate:
+    """
+    A GROUP-level relation proposal: two literatures connected through shared
+    intermediate terms (an ABC bridge, Swanson's closed discovery).
+
+    This is deliberately NOT the doc-doc ``CandidateRelation``: an ABC bridge holds
+    between two *literatures* (concepts) A and C via a set of intermediate B-terms
+    present in both, NOT between two documents. A and C typically share little
+    surface vocabulary — the connection runs through B.
+
+    Fields:
+      kind      : the relation type proposed (``RelationKind.ABC_BRIDGE``).
+      a_label   : literature/concept label for the A side.
+      c_label   : literature/concept label for the C side.
+      b_terms   : the intermediate terms found in both literatures (EVIDENCE,
+                  discovered by the method, never hand-labeled).
+      score     : raw mediated-connectivity (proposal strength). NOT a truth value
+                  and NOT a p-value — the verifier recomputes everything from the
+                  literatures and decides against explicit nulls.
+      evidence  : free-form detail (direct A-C similarity, per-null p-values...).
+      provenance: identifiers/labels the proposal was derived from.
+    """
+
+    kind: RelationKind
+    a_label: str
+    c_label: str
+    b_terms: Sequence[str] = field(default_factory=tuple)
+    score: float = 0.0
+    evidence: Mapping[str, object] = field(default_factory=dict)
+    provenance: Sequence[str] = field(default_factory=tuple)
+
+
+# Anything the verification stage can criticise. Each carries a ``kind`` the
+# registry dispatches on. Doc-doc and group-level candidates are distinct types;
+# verifiers narrow to the one they handle and reject the other.
+RelationCandidate = Union[CandidateRelation, BridgeCandidate]
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Stage 3 output — verification
 # ─────────────────────────────────────────────────────────────────────────────
@@ -155,7 +194,7 @@ class VerificationResult:
       reasoning     : short note on why this verdict, for the audit trail.
     """
 
-    candidate: CandidateRelation
+    candidate: RelationCandidate
     verdict: Verdict
     statistic: float
     p_value: Optional[float] = None
