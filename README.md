@@ -1,5 +1,9 @@
 # Axon — the Science Nervous System (SNS)
 
+<p align="center">
+  <img src="banner_Axon.png" alt="Axon — the Science Nervous System" width="100%">
+</p>
+
 > Relational infrastructure over the scientific literature: the relation is the unit, and verification comes before discovery.
 
 [![CI](https://github.com/QHDALabs/QHDALabs-Axon/actions/workflows/ci.yml/badge.svg)](https://github.com/QHDALabs/QHDALabs-Axon/actions/workflows/ci.yml)
