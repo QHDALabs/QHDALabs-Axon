@@ -1,5 +1,17 @@
 # Axon — the Science Nervous System (SNS)
 
+> Relational infrastructure over the scientific literature: the relation is the unit, and verification comes before discovery.
+
+[![CI](https://github.com/QHDALabs/QHDALabs-Axon/actions/workflows/ci.yml/badge.svg)](https://github.com/QHDALabs/QHDALabs-Axon/actions/workflows/ci.yml)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](pyproject.toml)
+[![Type-checked: mypy strict](https://img.shields.io/badge/mypy-strict-blue.svg)](pyproject.toml)
+[![Built on qhda-core](https://img.shields.io/badge/built%20on-qhda--core-1f6feb.svg)](https://github.com/QHDALabs/qhda-core)
+[![License: RCSAL v2.0](https://img.shields.io/badge/license-RCSAL%20v2.0-blue.svg)](LICENSE)
+
+**[Manifesto](Manifest.md)** · **[Verification log](VERIFICATION_LOG.md)** · **[qhda-core](https://github.com/QHDALabs/qhda-core)**
+
+---
+
 Infrastructure for getting a grip on the scientific literature, which grows by
 millions of texts per year.
 
@@ -18,7 +30,7 @@ methodological contract — verification before discovery, null results as
 first-class data, honest scope claims — is in
 [VERIFICATION_LOG.md](VERIFICATION_LOG.md).
 
-> Status: MVP + ABC bridge. The pipeline runs end to end on small, fixed, **real**
+> **Status: MVP + ABC bridge.** The pipeline runs end to end on small, fixed, **real**
 > corpora for two relation kinds: `PROXIMITY` (lexical TF-IDF, empirical random-pair
 > null, BH-FDR) and `ABC_BRIDGE` (Swanson closed discovery — two literatures linked
 > through shared intermediate B-terms, with two explicit nulls). On a frozen pre-1986
@@ -64,23 +76,29 @@ mirroring qhda-core's dependency boundary.
 
 ## Install
 
-Axon depends on qhda-core. Install the dependency first so it resolves to your
-local checkout rather than PyPI, then install Axon:
+Axon depends on [`qhda-core`](https://github.com/QHDALabs/qhda-core), which is
+public on GitHub but **not** on PyPI. Install it first so Axon's dependency
+resolves to it, then install Axon.
+
+**From a clean clone:**
 
 ```bash
-# relational layer only (pure numpy):
-pip install -e ../qhda-core
-pip install -e .
-
-# with the optional quantum layer (Qiskit):
-pip install -e "../qhda-core[quantum]"
-pip install -e ".[quantum]"
+pip install "git+https://github.com/QHDALabs/qhda-core.git"
+pip install .
 ```
 
-Development extras (pytest, coverage):
+**For development** (editable install against a sibling checkout):
 
 ```bash
-pip install -e ".[dev]"
+pip install -e ../qhda-core
+pip install -e ".[dev]"          # pytest, mypy, coverage
+```
+
+**With the optional quantum layer** (Qiskit):
+
+```bash
+pip install "qhda-core[quantum] @ git+https://github.com/QHDALabs/qhda-core.git"
+pip install ".[quantum]"
 ```
 
 ## Quickstart
