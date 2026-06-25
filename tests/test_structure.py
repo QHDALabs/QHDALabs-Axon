@@ -23,12 +23,13 @@ def test_four_stages_importable():
 
 def test_public_api_surface():
     expected = {
-        "Document", "RelationKind", "CandidateRelation", "Verdict",
+        "Document", "RelationKind", "CandidateRelation", "BridgeCandidate", "Verdict",
         "VerificationResult", "Hypothesis",
         "normalize_text", "ingest_text", "ingest_corpus",
         "Featurizer", "TfidfFeaturizer", "featurize_documents",
-        "RelationStore",
+        "RelationStore", "LiteratureStore",
         "Verifier", "RandomPairProximityVerifier", "CorpusContext",
+        "AbcBridgeVerifier", "propose_bridge",
         "VerifierRegistry", "NoVerifierError", "verify_all",
         "benjamini_hochberg", "apply_fdr",
         "surface_hypotheses",

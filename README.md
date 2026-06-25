@@ -18,12 +18,14 @@ methodological contract — verification before discovery, null results as
 first-class data, honest scope claims — is in
 [VERIFICATION_LOG.md](VERIFICATION_LOG.md).
 
-> Status: MVP. The pipeline runs end to end on a small, fixed, **real** corpus
-> (`data/corpus_mvp.json`) for ONE relation kind — `PROXIMITY` — using a lexical
-> TF-IDF baseline, an empirical **random-pair null**, and **Benjamini-Hochberg FDR**
-> control. The only claim is "lexical proximity, FDR-controlled"; no semantic or
-> mechanistic claim is made. Mechanistic relation kinds are declared but left
-> unregistered (they fail closed). No benchmark claims, no fabricated metrics.
+> Status: MVP + ABC bridge. The pipeline runs end to end on small, fixed, **real**
+> corpora for two relation kinds: `PROXIMITY` (lexical TF-IDF, empirical random-pair
+> null, BH-FDR) and `ABC_BRIDGE` (Swanson closed discovery — two literatures linked
+> through shared intermediate B-terms, with two explicit nulls). On a frozen pre-1986
+> PubMed corpus the bridge verifier RECOVERS the known Raynaud / fish-oil connection
+> (methodological validation, **not** a scientific discovery claim). The other
+> mechanistic relation kinds are declared but unregistered (they fail closed). No
+> benchmark claims, no fabricated metrics.
 
 ## Architecture — the order is the thesis
 
@@ -141,10 +143,42 @@ multiple-testing burden when *every* pair is tested. Surfacing only what survive
 
 ### Relation kinds (fail closed)
 
-`RelationKind` declares `PROXIMITY` plus placeholders (`SAME_MECHANISM_AS`,
-`SUPPORTS`, `CONTRADICTS`, `ABC_BRIDGE`, `MEASUREMENT_BRIDGE`). Only `PROXIMITY`
-has a registered verifier; proposing any other kind **raises** (no silent fallback
-to proximity). No relation kind ships without its own explicit null.
+`RelationKind` declares `PROXIMITY` and `ABC_BRIDGE` (both implemented, each with
+its own explicit null) plus placeholders (`SAME_MECHANISM_AS`, `SUPPORTS`,
+`CONTRADICTS`, `MEASUREMENT_BRIDGE`). Only the implemented kinds have a registered
+verifier; proposing any other kind **raises** (no silent fallback). No relation kind
+ships without its own explicit null.
+
+### ABC bridges (closed discovery)
+
+A direct proximity verifier would correctly return NULL on Raynaud vs fish oil —
+they share almost no surface vocabulary — and MISS the connection, which runs
+through intermediate B-terms (blood viscosity, platelet aggregation,
+vasoconstriction). `AbcBridgeVerifier` scores the B-mediated connection between two
+literatures and tests it against two explicit nulls (random-literature-pair and a
+shuffled-B null restricted to the shareable common pool), with B re-selected on
+every null replica. The bridge signature is **low direct similarity, high mediated
+connectivity**; a directly-similar pair is gated out as proximity.
+
+On a frozen pre-1986 PubMed corpus ([data/bridge_corpus.json](data/bridge_corpus.json),
+MeSH substrate) the verifier recovers the Raynaud / fish-oil bridge:
+direct_sim=0.046, 34 B-terms (discovered, including `blood platelets`,
+`arachidonic acid`, `aspirin`), passing both nulls (p=0.0345 random-pair, 0.0005
+shuffled-B); accepted under closed-discovery FDR (family = the one pre-specified
+pair; q=0.0345). Negative controls are rejected (scleroderma by the proximity gate,
+dental caries as worse than chance).
+
+```bash
+python examples/abc_bridge_recovery.py
+```
+
+This is **methodological validation** (the statistic was shaped in-sample for this
+known case), not a scientific claim. The closed-discovery FDR leniency (family of
+one) is legitimate only because the pair was pre-specified; open discovery (scanning
+many candidate C's) requires FDR across all of them. Held-out validation
+(migraine / magnesium) is the next step. See
+[VERIFICATION_LOG.md](VERIFICATION_LOG.md) for the full account, including the null
+artifact that verify-first caught and fixed.
 
 ## Tests
 

@@ -31,11 +31,17 @@ length)?" — which is what the random-pair null below answers.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Protocol, Sequence, Tuple
+from typing import Any, Dict, List, Protocol, Sequence, Tuple
 
 import numpy as np
 
-from ..types import CandidateRelation, RelationKind, Verdict, VerificationResult
+from ..types import (
+    CandidateRelation,
+    RelationCandidate,
+    RelationKind,
+    Verdict,
+    VerificationResult,
+)
 
 
 class CorpusContext(Protocol):
@@ -68,7 +74,7 @@ class Verifier:
     everything" failure mode the whole stage exists to prevent.
     """
 
-    def verify(self, candidate: CandidateRelation, context: CorpusContext) -> VerificationResult:
+    def verify(self, candidate: RelationCandidate, context: Any) -> VerificationResult:
         raise NotImplementedError(
             "Verifier is abstract. Implement verify() with an explicit null model "
             "and a verdict that can be REJECTED/NULL, not just ACCEPTED."
@@ -149,13 +155,14 @@ class RandomPairProximityVerifier(Verifier):
         self._cache[key] = pre
         return pre
 
-    def verify(self, candidate: CandidateRelation, context: CorpusContext) -> VerificationResult:
-        if candidate.kind is not RelationKind.PROXIMITY:
+    def verify(self, candidate: RelationCandidate, context: Any) -> VerificationResult:
+        if not isinstance(candidate, CandidateRelation) or candidate.kind is not RelationKind.PROXIMITY:
             raise NotImplementedError(
-                f"RandomPairProximityVerifier only handles {RelationKind.PROXIMITY!r}, "
-                f"got {candidate.kind!r}."
+                f"RandomPairProximityVerifier only handles doc-doc "
+                f"{RelationKind.PROXIMITY!r} candidates, got {candidate!r}."
             )
-        pre = self._precompute(context)
+        ctx: CorpusContext = context
+        pre = self._precompute(ctx)
         ia = pre.pos[candidate.source_id]
         ib = pre.pos[candidate.target_id]
         lo, hi = (ia, ib) if ia < ib else (ib, ia)
@@ -165,7 +172,7 @@ class RandomPairProximityVerifier(Verifier):
                               context.domain_of(candidate.target_id))))
         bpair = tuple(sorted((context.length_band_of(candidate.source_id),
                               context.length_band_of(candidate.target_id))))
-        skey: _StratumKey = (dpair, bpair)  # type: ignore[assignment]
+        skey: _StratumKey = (dpair, bpair)
 
         eligible = pre.pairs_by_stratum.get(skey, [])
         null = np.array(

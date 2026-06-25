@@ -19,7 +19,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, Iterable, List
 
-from ..types import Hypothesis, Verdict, VerificationResult
+from ..types import BridgeCandidate, Hypothesis, Verdict, VerificationResult
 
 
 @dataclass(frozen=True)
@@ -51,10 +51,17 @@ def _statement_for(result: VerificationResult) -> str:
     """Render a plain-language claim for an accepted relation."""
     c = result.candidate
     q = "n/a" if result.q_value is None else f"{result.q_value:.4f}"
+    if isinstance(c, BridgeCandidate):
+        b_preview = ", ".join(list(c.b_terms)[:6])
+        endpoints = (
+            f"literatures {c.a_label!r} and {c.c_label!r} are bridged ({c.kind.value}) "
+            f"via B-terms [{b_preview}]"
+        )
+    else:
+        endpoints = f"{c.source_id} and {c.target_id} are related ({c.kind.value})"
     return (
-        f"{c.source_id} and {c.target_id} are related ({c.kind.value}): "
-        f"statistic={result.statistic:.3f}, p={result.p_value!r}, q(FDR)={q} "
-        f"vs null [{result.null_model}]."
+        f"{endpoints}: statistic={result.statistic:.3f}, p={result.p_value!r}, "
+        f"q(FDR)={q} vs null [{result.null_model}]."
     )
 
 

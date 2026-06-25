@@ -28,6 +28,8 @@ from .types import (
     Document,
     RelationKind,
     CandidateRelation,
+    BridgeCandidate,
+    RelationCandidate,
     Verdict,
     VerificationResult,
     Hypothesis,
@@ -38,7 +40,9 @@ from .types import (
 from .perception.ingest import normalize_text, ingest_text, ingest_corpus
 from .perception.featurize import Featurizer, TfidfFeaturizer, featurize_documents
 from .relational_representation.relation_store import RelationStore
+from .relational_representation.literature_store import LiteratureStore, default_term_extractor
 from .verification.verifier import Verifier, RandomPairProximityVerifier, CorpusContext
+from .verification.bridge import AbcBridgeVerifier, LiteratureContext, propose_bridge
 from .verification.registry import VerifierRegistry, NoVerifierError, verify_all
 from .verification.null_models import NullResult, permutation_p_value, bootstrap_ci
 from .verification.multiple_testing import benjamini_hochberg, apply_fdr
@@ -50,6 +54,8 @@ __all__ = [
     "Document",
     "RelationKind",
     "CandidateRelation",
+    "BridgeCandidate",
+    "RelationCandidate",
     "Verdict",
     "VerificationResult",
     "Hypothesis",
@@ -62,10 +68,15 @@ __all__ = [
     "featurize_documents",
     # stage 2 — relational representation
     "RelationStore",
+    "LiteratureStore",
+    "default_term_extractor",
     # stage 3 — verification
     "Verifier",
     "RandomPairProximityVerifier",
     "CorpusContext",
+    "AbcBridgeVerifier",
+    "LiteratureContext",
+    "propose_bridge",
     "VerifierRegistry",
     "NoVerifierError",
     "verify_all",

@@ -151,6 +151,93 @@ unregistered (fail closed) until each has its own explicit null.
 
 ---
 
+### [2026-06-25] Session: ABC bridge — recovery of a known closed discovery (methodological validation, no scientific claim)
+
+Engineering + methodology entry. **METHODOLOGICAL VALIDATION, not a scientific
+discovery**: the question is whether the method RECOVERS a documented bridge
+(Swanson's Raynaud / fish-oil, 1986) from pre-1986 literature. The statistic was
+shaped IN-SAMPLE for this case, so recovery validates the machinery, not a claim
+about biology. Held-out generalization (migraine / magnesium) is the next step and
+will run WITHOUT touching the statistic.
+
+**Bridge model.** A and C are literatures; the relation is group-level
+(`BridgeCandidate`), not doc-doc. Substrate: MeSH descriptors (controlled
+vocabulary; pre-1986 records often lack abstracts but carry MeSH). Profile
+`w_L[t] = mean_TF * idf[t]` (idf from a background pool DISJOINT from A/C).
+`mediated = sum_{t in B} min(w_A[t], w_C[t])`; `direct_sim = cos(w_A, w_C)` over
+non-generic vocab. A bridge has LOW direct_sim and HIGH mediated; a high-direct_sim
+pair is proximity and is gated out (`direct_max=0.30`). B-selection (shared support
+among non-generic terms) is part of the statistic and is **re-selected on every null
+replica**, never frozen on the observed pair. Generic-B control: drop MeSH
+check-tags/ubiquitous descriptors (stoplist), `background_df_ratio > max_df`, and
+low-idf terms.
+
+**Two nulls (both reported; `p = max(p1, p2)`).**
+1. random-literature-pair: mediated for two focused, unrelated background
+   literatures of the same sizes;
+2. shuffled-B: permute w_C to break the specific A-B-C alignment.
+
+**Artifact found and fixed (verify-first, on synthetic data, BEFORE the real corpus).**
+The first shuffled-B permuted the WHOLE w_C vector. That manufactured overlaps
+between each literature's PRIVATE dominant terms (A-dom × C-dom) — impossible in the
+observed data, where those vocabularies are disjoint — inflating the null and
+killing its power: a cleanly planted bridge could not beat it without raising
+direct_sim past the proximity gate (parameter sweep confirmed the bind). Fix:
+restrict the shuffle to the COMMON POOL (`background_df > 0`); literature-private
+terms (`df == 0`) stay fixed. This removes impossible events and keeps legal ones.
+
+**Anchor — calibration of the corrected null (this is what makes the p-values mean
+anything).** Full pipeline (B-selection per replica + both nulls + gate + FDR) on
+focused, unrelated background pairs: **false-ACCEPTED = 0 / 30 (rate 0.000)**, well
+under α=0.05. The corrected shuffled-B bought power without buying a leak. Planted
+synthetic bridge (modeled from reality — B common/mid-frequency in background,
+independently of the null's mechanics): direct_sim=0.090, p_random_pair=0.0005,
+p_shuffled_B=0.0005 → ACCEPTED. Hard negatives: directly-similar → REJECTED (gate);
+generic-only → INCONCLUSIVE.
+
+**Recovery (frozen pre-1986 corpus, 717 records, all with MeSH; seed=0, R=n=2000).**
+`raynaud ~ fish_oil`: direct_sim=**0.046** (very low), |B|=**34**, mediated=**5.10**;
+**p_random_pair=0.0345, p_shuffled_B=0.0005**, p=max=0.0345.
+- FDR family = **{raynaud~fish_oil}** (closed discovery, one pre-specified pair) →
+  **q=0.0345 → ACCEPTED**.
+- For transparency: pooling the negative controls into the family would give
+  **q=0.069** (not accepted). That pooling is what OPEN discovery requires; here it
+  does not apply (see boundary).
+
+**Why family = 1 (decision, not cosmetics).** FDR controls false discoveries among
+the RODZINA of discovery CANDIDATES. A negative control is not a candidate — it
+validates the method, it does not compete as a discovery. FDR-ing the real
+hypothesis against its own controls penalizes due diligence (the more specificity
+checks you run, the harder it becomes to accept a true bridge), which is wrong.
+Closed discovery with one pre-specified A–C pair = a family of size 1.
+
+**BOUNDARY (carried loudly).** Family-1 is legitimate ONLY because `raynaud~fish_oil`
+was **pre-specified** (a documented Swanson case fixed BEFORE the fetch; corpus
+restricted to pre-1986 so there is no post-discovery A–C leak) and was NOT chosen
+from a scan over candidate C's by p-value. In OPEN discovery the family is ALL
+scanned C's and FDR over them is mandatory — this leniency DOES NOT transfer.
+
+**Honest reading of the margin.** The binding null is the WEAKER random-pair null
+(p=0.0345), not shuffled-B (0.0005); the margin is modest. Recovery is real but not
+overwhelming. The bridge SIGNATURE is unambiguous, and the B-terms surfaced by the
+method — `blood platelets`, `arachidonic acid`, `aspirin`, `blood vessels`,
+`blood pressure`, `angiography` — are the platelet / prostaglandin / vascular
+pathway Swanson identified: qualitative confirmation that the method found the right
+mechanism, not a coincidental lexical overlap.
+
+**Controls (specificity holds).** `raynaud ~ scleroderma` → REJECTED (proximity gate,
+direct_sim=0.346 — clinically near Raynaud, so directly similar, not a bridge).
+`raynaud ~ dental_caries` → REJECTED (mediated below the random-pair null mean,
+p_random=0.746).
+
+**Decision:** keep as validated recovery under the closed-discovery design.
+`ABC_BRIDGE` is now a registered relation kind with its own explicit nulls; the
+other mechanistic kinds remain unregistered (fail closed). Next: held-out
+migraine / magnesium recovery, run without changing the statistic — held-out
+evidence outweighs in-sample.
+
+---
+
 ### [YYYY-MM-DD] Hypothesis: <first scientific hypothesis>
 
 **Question:**
