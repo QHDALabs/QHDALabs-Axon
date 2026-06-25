@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Axon — the Science Nervous System: a relation-first, verification-before-discovery layer over the scientific literature"
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "MIT" }
+license = { text = "RCSAL-2.0" }
 authors = [{ name = "Krzysztof Banasiewicz" }]
 keywords = ["literature-based-discovery", "relations", "verification", "qhda-core", "scientific-literature"]
 
