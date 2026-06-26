@@ -282,7 +282,74 @@ to form B -> STOP and report (do NOT swap to abstracts or loosen filters). If th
 controls do not separate (directly-similar high direct_sim; unrelated worse-than-
 chance) -> STOP and report (adjust nothing).
 
-<!-- result entry appended below AFTER the run -->
+**RESULT [2026-06-26] — logged as-is per the commitment above. Outcome: NON-RECOVERY
++ control-separation failure. Zero tuning; bridge.py blob 1969f43d… unchanged.**
+
+Corpus: 710 pre-1988 PubMed records, all with MeSH (B forms fine — no sparsity STOP).
+Verifier: the frozen `AbcBridgeVerifier` (R=n=2000, seed=0), family-1 FDR.
+
+**migraine ~ magnesium — NOT recovered.**
+- Bridge signature is correct: direct_sim=**0.013** (very low), |B|=**22**, mediated=2.41.
+- Nulls: **p_random_pair=0.1214, p_shuffled_B=0.1074**, p=max=0.1214 → family-1
+  **q=0.1214 → NULL**. Not a near-miss; ~2.4x the 0.05 threshold.
+- Mechanism: `platelet aggregation` IS among the discovered B-terms, but
+  `vasoconstriction`, `cortical spreading depression`, `serotonin` are NOT; the B
+  set is noisy (`blood glucose`, `reference values`, `radiography`, `risk factors`
+  alongside `norepinephrine`, `calcium`, `hemodynamics`, `adenosine diphosphate`).
+  The mechanism is only weakly and partially surfaced.
+
+**Control separation — FAILED (STOP condition).**
+- `migraine ~ cluster_headache` (directly-similar control, expected gated as
+  proximity): direct_sim=**0.283** — just UNDER the frozen `direct_max=0.30`, so the
+  gate did NOT fire. It then scored mediated=**8.60**, p_random=**0.0135**,
+  p_shuffled=**0.0005** → family-1 **q=0.0135 → would be ACCEPTED**. A same-class
+  non-bridge looks like a STRONGER bridge to migraine than the true target magnesium
+  does. The directly-similar control did not separate.
+- `migraine ~ dental_caries` (unrelated control): REJECTED, worse than chance
+  (p_random=0.891). This control separated correctly.
+- Calibration on focused unrelated background pairs (full pipeline): false-accept
+  **0/30 (0.000)** — the frozen shuffled-B still holds against random pairs.
+
+**Interpretation — TWO distinct findings about the method (not one vague "it didn't
+work"). Held-out generalization FAILED; statistic frozen; this card is spent once.**
+
+**Finding 1 — LIMITED POWER (range-of-validity limit).** The true, genuinely-distant
+bridge migraine↔magnesium (mediated=2.41) does NOT beat its nulls (p≈0.12). The
+statistic detected the in-sample Raynaud/fish-oil bridge (mediated=5.10, medium
+mediation) but is effectively BLIND to a very distant bridge carried by thin
+mediation. The mediated-connectivity statistic has a sensitivity floor: it finds
+medium-mediation bridges and misses very thin ones. That is a boundary of its reach,
+established on held-out data.
+
+**Finding 2 — THE GATE DOES NOT SEPARATE SIBLINGS (the stronger result).** Cluster
+headache is NOT a bridge — it is a sibling literature of migraine (same primary-
+headache class). Yet it has direct_sim=0.283, slips UNDER the frozen direct_max=0.30
+gate, and with q=0.0135 WOULD BE FALSELY ACCEPTED as a bridge — and a *stronger* one
+to migraine (mediated=8.60) than the true target magnesium (2.41). This is a
+SYSTEMATIC false-positive on closely-related literatures: in open discovery, scanning
+migraine against many candidate C's, every clinical sibling would generate a spurious
+"bridge". The held-out test caught this BEFORE it could be shipped. The hard
+direct_max threshold is the wrong instrument for separating siblings from bridges —
+proximity and bridging are not cleanly split by a single cosine cutoff.
+
+The unrelated control `dental_caries` separated correctly (worse than chance), and
+the frozen shuffled-B null still calibrates (false-accept 0/30 on background pairs) —
+so neither finding is an artifact of a broken null; they are properties of the
+mediated statistic and the gate.
+
+**Commitment honored.** Nothing was tuned. The bridge statistic, thresholds, B-rule,
+nulls, and corpus recipe are exactly as pre-registered; bridge.py is byte-identical
+to blob `1969f43d8fb172f40bc4c878d519f406ac7499f2` (verify with `git hash-object`).
+
+**Open problems (for a SEPARATE, future, re-validated effort — do NOT touch bridge.py
+here; this is no longer held-out for migraine/magnesium):**
+- OP1 — sensitivity to thin mediation: the mediated statistic misses very distant
+  bridges. A power-aware statistic (e.g. normalizing for each literature's own mass,
+  or weighting rare shared intermediates) would need its own held-out validation.
+- OP2 — sibling separation: a single direct_sim gate at 0.30 does not distinguish a
+  sibling literature from a true bridge (cluster headache at 0.283). Separating
+  "same class" from "distinct-but-bridged" likely needs more than one cosine cutoff.
+Both are recorded as open; any fix is a new card with a new pre-registration.
 
 ---
 
