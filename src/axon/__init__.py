@@ -27,6 +27,11 @@ __version__ = "0.1.0"
 from .types import (
     Document,
     RelationKind,
+    RelationStatus,
+    ValidationState,
+    RelationStatusInfo,
+    RELATION_STATUS,
+    render_relation_status_markdown,
     CandidateRelation,
     BridgeCandidate,
     RelationCandidate,
@@ -53,6 +58,11 @@ __all__ = [
     # contracts
     "Document",
     "RelationKind",
+    "RelationStatus",
+    "ValidationState",
+    "RelationStatusInfo",
+    "RELATION_STATUS",
+    "render_relation_status_markdown",
     "CandidateRelation",
     "BridgeCandidate",
     "RelationCandidate",
