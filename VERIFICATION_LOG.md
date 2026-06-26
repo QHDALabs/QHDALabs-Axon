@@ -238,6 +238,54 @@ evidence outweighs in-sample.
 
 ---
 
+### [2026-06-26] PRE-REGISTRATION: held-out ABC-bridge test — migraine / magnesium
+
+Written and committed BEFORE any fetch or run (this is commit #1 on
+`feature/migraine-magnesium-heldout`; a draft PR is opened immediately after it, so
+GitHub timestamps the rule ahead of the result). The value of a held-out test is
+that the statistic is frozen and recorded before the result is seen. This entry
+fixes, ahead of data:
+
+A = migraine, C = magnesium (Swanson's second documented bridge, 1988). Fixed before
+seeing any corpus; NOT selected from a scan over candidate C's.
+
+FROZEN CODE — verifiable fact, not a promise. The bridge logic is frozen at:
+- base commit `5101c8e4d231b1d420b91c016ddf1e16260a32d0` (main after the ABC work),
+- `src/axon/verification/bridge.py` blob `1969f43d8fb172f40bc4c878d519f406ac7499f2`.
+Anyone can `git diff` bridge.py from that blob against this PR and see ZERO changes.
+Not one line of bridge.py changes for this test: the bridge statistic
+(mediated = sum_{t in B} min(w_A[t], w_C[t])), direct_max=0.30, the B-selection rule
+(shared support among non-generic terms, re-selected on EVERY null replica), both
+nulls (random-literature-pair + shuffled-B over the common pool background_df>0),
+R = n_random_pairs = n_shuffles = 2000, seed = 0, alpha = 0.05, and the family-1 FDR
+rule. Family-1 is legitimate ONLY because A-C is pre-specified here; in open
+discovery the family is all scanned C's. Migraine/magnesium runs through the
+UNCHANGED AbcBridgeVerifier.
+
+FROZEN CORPUS RECIPE — no post-hoc engineering to make a result appear:
+- A = migraine ("migraine"), C = magnesium ("magnesium"); MeSH substrate.
+- Date filter 1900:1987[dp] (strictly pre-1988, before Swanson's publication).
+- Directly-similar control: cluster headache (same primary-headache class; expected
+  high direct_sim -> gated as proximity).
+- Unrelated control: dental caries (expected worse-than-chance).
+- Background (IDF + random-pair null): asthma, epilepsy, glaucoma, psoriasis,
+  tuberculosis, hepatitis, appendicitis, cataract — focused, comparable, disjoint
+  from A/C/controls.
+
+COMMITMENT: whatever the verifier returns goes into the log as-is — ACCEPTED, NULL,
+or honest near-miss. Zero tuning of statistic, thresholds, B-rule, nulls, or corpus
+after seeing the outcome. A non-recovery is a RESULT ("the method generalizes to one
+case, not the class"), logged as such, not a failure.
+
+STOP conditions (report, never quiet workaround): if pre-1988 MeSH is too sparse/flat
+to form B -> STOP and report (do NOT swap to abstracts or loosen filters). If the
+controls do not separate (directly-similar high direct_sim; unrelated worse-than-
+chance) -> STOP and report (adjust nothing).
+
+<!-- result entry appended below AFTER the run -->
+
+---
+
 ### [YYYY-MM-DD] Hypothesis: <first scientific hypothesis>
 
 **Question:**
