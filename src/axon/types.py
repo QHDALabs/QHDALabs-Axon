@@ -65,18 +65,149 @@ class RelationKind(str, Enum):
     """
     The kinds of relation Axon can propose between items.
 
-    Only ``PROXIMITY`` is implemented in the MVP. The rest are declared but left
-    WITHOUT a registered verifier, so a candidate of that kind fails closed at
-    verification (no relation kind ships without its own explicit null). They are
-    placeholders for later increments, not working features.
+    ``PROXIMITY`` and ``ABC_BRIDGE`` are implemented. ``ABC_BRIDGE`` recovers curated
+    cases in CLOSED discovery (a pre-specified A-C pair) but is experimental and NOT
+    validated for OPEN discovery: held-out validation failed (see VERIFICATION_LOG,
+    OP1/OP2). ``SAME_MECHANISM_AS``, ``SUPPORTS``, ``CONTRADICTS`` and
+    ``MEASUREMENT_BRIDGE`` are declared, unregistered, and fail closed.
+
+    The per-kind status (the single source of truth) is ``RELATION_STATUS`` below —
+    docs reference it, they do not restate it.
     """
 
-    PROXIMITY = "proximity"               # implemented: lexical/distributional closeness
-    SAME_MECHANISM_AS = "same_mechanism_as"   # placeholder (fails closed)
-    SUPPORTS = "supports"                     # placeholder (fails closed)
-    CONTRADICTS = "contradicts"               # placeholder (fails closed)
-    ABC_BRIDGE = "abc_bridge"                 # placeholder (fails closed): Swanson A-B-C
-    MEASUREMENT_BRIDGE = "measurement_bridge" # placeholder (fails closed): quantum extra
+    PROXIMITY = "proximity"
+    SAME_MECHANISM_AS = "same_mechanism_as"
+    SUPPORTS = "supports"
+    CONTRADICTS = "contradicts"
+    ABC_BRIDGE = "abc_bridge"
+    MEASUREMENT_BRIDGE = "measurement_bridge"
+
+
+class RelationStatus(str, Enum):
+    """Operational status of a relation kind. Two independent axes are encoded
+    across ``RelationStatus`` (yield/maturity) and ``general_use`` (open-discovery
+    safety): a kind can be safe-but-low-yield, or higher-yield-but-unsafe."""
+
+    SAFE_LOW_YIELD = "safe_low_yield"                    # safe everywhere; surfaces little
+    EXPERIMENTAL_CLOSED_ONLY = "experimental_closed_only"  # closed discovery only
+    DECLARED_UNREGISTERED = "declared_unregistered"      # no verifier; fails closed
+
+
+class ValidationState(str, Enum):
+    """What validation has actually been done — kept distinct from ``general_use``
+    so "safe" is never read as "proven to discover"."""
+
+    SAFE_NO_DISCOVERY_CLAIM = "safe_no_discovery_claim"  # clean/calibrated; makes no discovery claim
+    HELD_OUT_FAILED = "held_out_failed"                  # held-out tested and did NOT generalize
+    UNTESTED = "untested"                                # never exercised (no verifier)
+
+
+@dataclass(frozen=True)
+class RelationStatusInfo:
+    """Status record for one ``RelationKind`` — the single source of truth.
+
+    Fields:
+      status          : operational status (yield/maturity axis).
+      validation_state: what validation was actually done (NOT a discovery claim).
+      general_use     : safe in OPEN discovery? Invariant: True only when
+                        validation_state is SAFE_NO_DISCOVERY_CLAIM.
+      allowed_use     : what this kind may be used for.
+      forbidden_use   : what it must not be used for.
+      note            : short pointer to the methodological record (VERIFICATION_LOG).
+    """
+
+    status: RelationStatus
+    validation_state: ValidationState
+    general_use: bool
+    allowed_use: str
+    forbidden_use: str
+    note: str
+
+
+# ─── SINGLE SOURCE OF TRUTH — every human-readable doc derives from this ───
+RELATION_STATUS: Mapping[RelationKind, RelationStatusInfo] = {
+    RelationKind.PROXIMITY: RelationStatusInfo(
+        status=RelationStatus.SAFE_LOW_YIELD,
+        validation_state=ValidationState.SAFE_NO_DISCOVERY_CLAIM,
+        general_use=True,
+        allowed_use="any discovery, open or closed",
+        forbidden_use="none",
+        note="methodologically clean, fail-closed, honest null; the SAFER mechanism. "
+             "Low yield on small corpora is by design, not a defect. No false positives "
+             "demonstrated (FDR-controlled). See VERIFICATION_LOG MVP entry.",
+    ),
+    RelationKind.ABC_BRIDGE: RelationStatusInfo(
+        status=RelationStatus.EXPERIMENTAL_CLOSED_ONLY,
+        validation_state=ValidationState.HELD_OUT_FAILED,
+        general_use=False,
+        allowed_use="closed discovery with a pre-specified A-C pair",
+        forbidden_use="open discovery / scanning many candidate C's "
+                      "(mass-produces false bridges via the sibling false-positive)",
+        note="recovers curated closed cases (Raynaud/fish-oil in-sample); held-out "
+             "migraine/magnesium did NOT generalize. See VERIFICATION_LOG OP1 "
+             "(thin-mediation power) and OP2 (gate does not separate siblings).",
+    ),
+    RelationKind.SAME_MECHANISM_AS: RelationStatusInfo(
+        status=RelationStatus.DECLARED_UNREGISTERED,
+        validation_state=ValidationState.UNTESTED,
+        general_use=False,
+        allowed_use="none (no verifier registered)",
+        forbidden_use="any use — fails closed at verification",
+        note="declared placeholder; no explicit null; no verifier.",
+    ),
+    RelationKind.SUPPORTS: RelationStatusInfo(
+        status=RelationStatus.DECLARED_UNREGISTERED,
+        validation_state=ValidationState.UNTESTED,
+        general_use=False,
+        allowed_use="none (no verifier registered)",
+        forbidden_use="any use — fails closed at verification",
+        note="declared placeholder; no explicit null; no verifier.",
+    ),
+    RelationKind.CONTRADICTS: RelationStatusInfo(
+        status=RelationStatus.DECLARED_UNREGISTERED,
+        validation_state=ValidationState.UNTESTED,
+        general_use=False,
+        allowed_use="none (no verifier registered)",
+        forbidden_use="any use — fails closed at verification",
+        note="declared placeholder; no explicit null; no verifier.",
+    ),
+    RelationKind.MEASUREMENT_BRIDGE: RelationStatusInfo(
+        status=RelationStatus.DECLARED_UNREGISTERED,
+        validation_state=ValidationState.UNTESTED,
+        general_use=False,
+        allowed_use="none (no verifier registered)",
+        forbidden_use="any use — fails closed at verification",
+        note="declared placeholder (quantum extra); no explicit null; no verifier.",
+    ),
+}
+
+
+def render_relation_status_markdown() -> str:
+    """Render RELATION_STATUS.md from the enum. The committed file must equal this
+    output (a test asserts it), so the table can never silently drift."""
+    lines = [
+        "# Relation status",
+        "",
+        "**Single source of truth:** `RELATION_STATUS` in `src/axon/types.py`.",
+        "This file is GENERATED by `scripts/gen_relation_status.py` — do not edit by",
+        "hand; `tests/test_relation_status.py` asserts it matches the enum.",
+        "",
+        "Two independent axes: **status** (how much it finds / maturity) and "
+        "**general use** (safe in open discovery). `PROXIMITY` is safe but low-yield; "
+        "`ABC_BRIDGE` finds more but has a proven failure mode. One is not simply "
+        "\"better\" than the other.",
+        "",
+        "| Kind | Status | Validation state | General use | Allowed use | Forbidden use | Note |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for kind in RelationKind:
+        info = RELATION_STATUS[kind]
+        lines.append(
+            f"| `{kind.value}` | {info.status.value} | {info.validation_state.value} "
+            f"| {'yes' if info.general_use else 'no'} | {info.allowed_use} "
+            f"| {info.forbidden_use} | {info.note} |"
+        )
+    return "\n".join(lines) + "\n"
 
 
 @dataclass(frozen=True)

@@ -23,7 +23,9 @@ def test_four_stages_importable():
 
 def test_public_api_surface():
     expected = {
-        "Document", "RelationKind", "CandidateRelation", "BridgeCandidate", "Verdict",
+        "Document", "RelationKind", "RelationStatus", "ValidationState",
+        "RelationStatusInfo", "RELATION_STATUS", "render_relation_status_markdown",
+        "CandidateRelation", "BridgeCandidate", "Verdict",
         "VerificationResult", "Hypothesis",
         "normalize_text", "ingest_text", "ingest_corpus",
         "Featurizer", "TfidfFeaturizer", "featurize_documents",
