@@ -174,6 +174,13 @@ its own explicit null) plus placeholders (`SAME_MECHANISM_AS`, `SUPPORTS`,
 verifier; proposing any other kind **raises** (no silent fallback). No relation kind
 ships without its own explicit null.
 
+The per-kind status — operational status, validation state, and whether it is safe
+for open discovery — is defined once in `RELATION_STATUS` (`src/axon/types.py`) and
+tabulated in **[RELATION_STATUS.md](RELATION_STATUS.md)** (generated from the enum,
+drift-checked by a test). Per-kind method cards live in
+[docs/method_cards/](docs/method_cards/). The rest of this README references that
+status; it does not restate it.
+
 ### ABC bridges (closed discovery)
 
 A direct proximity verifier would correctly return NULL on Raynaud vs fish oil —
@@ -202,24 +209,31 @@ known case), not a scientific claim. The closed-discovery FDR leniency (family o
 one) is legitimate only because the pair was pre-specified; open discovery (scanning
 many candidate C's) requires FDR across all of them.
 
-> **Held-out result: the in-sample Raynaud recovery did NOT generalize.** A
-> pre-registered held-out test on a second documented Swanson bridge
-> (migraine / magnesium, pre-1988, [data/heldout_corpus.json](data/heldout_corpus.json),
-> frozen verifier) **failed**, exposing two limitations:
-> 1. **Limited power on thin mediation** — the true, very distant migraine/magnesium
->    bridge (mediated=2.41) does not beat its nulls (p≈0.12); the statistic finds
->    medium-mediation bridges (Raynaud) but misses very thin ones.
-> 2. **The gate does not separate siblings** — cluster headache (a *non-bridge*
->    sibling of migraine) slips under the `direct_max=0.30` proximity gate
->    (direct_sim=0.283) and would be falsely accepted as a stronger bridge than the
->    true target. In open discovery this would generate false bridges on every
->    closely-related literature.
->
-> The unrelated control separated correctly and the null still calibrates, so these
-> are properties of the statistic/gate, not a broken null. Treat ABC-bridge results
-> as **not yet validated for general use**. See
-> [VERIFICATION_LOG.md](VERIFICATION_LOG.md) for the full account (and the shuffled-B
-> null artifact that verify-first caught and fixed earlier).
+#### Known limitations — `ABC_BRIDGE` (current implementation)
+
+Status: `EXPERIMENTAL_CLOSED_ONLY` (see [RELATION_STATUS.md](RELATION_STATUS.md) and
+[docs/method_cards/ABC_BRIDGE.md](docs/method_cards/ABC_BRIDGE.md)). To be precise:
+closed-discovery, in-sample recovery (a pre-specified A–C pair) **works**; **open**
+discovery is **forbidden**. This is a bounded limitation, not "all broken".
+
+A pre-registered held-out test on a second documented Swanson bridge
+(migraine / magnesium, pre-1988, [data/heldout_corpus.json](data/heldout_corpus.json),
+frozen verifier) **did not generalize**, exposing two failures (VERIFICATION_LOG
+OP1/OP2):
+1. **Limited power on thin mediation** — the true, very distant migraine/magnesium
+   bridge (mediated=2.41) does not beat its nulls (p≈0.12); the statistic finds
+   medium-mediation bridges (Raynaud) but misses very thin ones.
+2. **The gate does not separate siblings** — cluster headache (a *non-bridge* sibling
+   of migraine) slips under the `direct_max=0.30` proximity gate (direct_sim=0.283)
+   and would be falsely accepted as a stronger bridge than the true target — a
+   systematic false-positive on closely-related literatures, which is exactly why
+   open discovery is forbidden.
+
+The unrelated control separated correctly and the null still calibrates, so these are
+properties of the statistic/gate, not a broken null. `PROXIMITY` is unaffected — it is
+`SAFE_LOW_YIELD` (safe everywhere, low yield by design), a different point on the two
+axes, not a "better" or "worse" mechanism. See
+[VERIFICATION_LOG.md](VERIFICATION_LOG.md) for the full account.
 
 ## Tests
 
