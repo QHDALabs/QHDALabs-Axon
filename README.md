@@ -38,10 +38,13 @@ first-class data, honest scope claims — is in
 > corpora for two relation kinds: `PROXIMITY` (lexical TF-IDF, empirical random-pair
 > null, BH-FDR) and `ABC_BRIDGE` (Swanson closed discovery — two literatures linked
 > through shared intermediate B-terms, with two explicit nulls). On a frozen pre-1986
-> PubMed corpus the bridge verifier RECOVERS the known Raynaud / fish-oil connection
-> (methodological validation, **not** a scientific discovery claim). The other
-> mechanistic relation kinds are declared but unregistered (they fail closed). No
-> benchmark claims, no fabricated metrics.
+> PubMed corpus the bridge verifier recovers the known Raynaud / fish-oil connection
+> in-sample — but a **pre-registered held-out test (migraine / magnesium) FAILED**,
+> so ABC-bridge is **not yet validated for general use** (limited power on thin
+> mediation; the proximity gate does not separate sibling literatures — see below and
+> VERIFICATION_LOG.md). Methodological validation only, **not** a scientific discovery
+> claim. The other mechanistic relation kinds are declared but unregistered (they fail
+> closed). No benchmark claims, no fabricated metrics.
 
 ## Architecture — the order is the thesis
 
@@ -197,10 +200,26 @@ python examples/abc_bridge_recovery.py
 This is **methodological validation** (the statistic was shaped in-sample for this
 known case), not a scientific claim. The closed-discovery FDR leniency (family of
 one) is legitimate only because the pair was pre-specified; open discovery (scanning
-many candidate C's) requires FDR across all of them. Held-out validation
-(migraine / magnesium) is the next step. See
-[VERIFICATION_LOG.md](VERIFICATION_LOG.md) for the full account, including the null
-artifact that verify-first caught and fixed.
+many candidate C's) requires FDR across all of them.
+
+> **Held-out result: the in-sample Raynaud recovery did NOT generalize.** A
+> pre-registered held-out test on a second documented Swanson bridge
+> (migraine / magnesium, pre-1988, [data/heldout_corpus.json](data/heldout_corpus.json),
+> frozen verifier) **failed**, exposing two limitations:
+> 1. **Limited power on thin mediation** — the true, very distant migraine/magnesium
+>    bridge (mediated=2.41) does not beat its nulls (p≈0.12); the statistic finds
+>    medium-mediation bridges (Raynaud) but misses very thin ones.
+> 2. **The gate does not separate siblings** — cluster headache (a *non-bridge*
+>    sibling of migraine) slips under the `direct_max=0.30` proximity gate
+>    (direct_sim=0.283) and would be falsely accepted as a stronger bridge than the
+>    true target. In open discovery this would generate false bridges on every
+>    closely-related literature.
+>
+> The unrelated control separated correctly and the null still calibrates, so these
+> are properties of the statistic/gate, not a broken null. Treat ABC-bridge results
+> as **not yet validated for general use**. See
+> [VERIFICATION_LOG.md](VERIFICATION_LOG.md) for the full account (and the shuffled-B
+> null artifact that verify-first caught and fixed earlier).
 
 ## Tests
 
