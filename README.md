@@ -220,9 +220,12 @@ A pre-registered held-out test on a second documented Swanson bridge
 (migraine / magnesium, pre-1988, [data/heldout_corpus.json](data/heldout_corpus.json),
 frozen verifier) **did not generalize**, exposing two failures (VERIFICATION_LOG
 OP1/OP2):
-1. **Limited power on thin mediation** — the true, very distant migraine/magnesium
-   bridge (mediated=2.41) does not beat its nulls (p≈0.12); the statistic finds
-   medium-mediation bridges (Raynaud) but misses very thin ones.
+1. **Limited power on thin mediation** — the historically documented, very distant
+   migraine/magnesium bridge (mediated=2.41) does not beat its nulls (p≈0.12); the
+   statistic finds medium-mediation bridges (Raynaud) but misses very thin ones.
+   (Caveat: that benchmark is itself a thin, only "possibly effective" case, so this
+   single non-recovery is less diagnostic for this limitation — see VERIFICATION_LOG
+   post-hoc note.)
 2. **The gate does not separate siblings** — cluster headache (a *non-bridge* sibling
    of migraine) slips under the `direct_max=0.30` proximity gate (direct_sim=0.283)
    and would be falsely accepted as a stronger bridge than the true target — a
@@ -233,7 +236,9 @@ The unrelated control separated correctly and the null still calibrates, so thes
 properties of the statistic/gate, not a broken null. `PROXIMITY` is unaffected — it is
 `SAFE_LOW_YIELD` (safe everywhere, low yield by design), a different point on the two
 axes, not a "better" or "worse" mechanism. See
-[VERIFICATION_LOG.md](VERIFICATION_LOG.md) for the full account.
+[VERIFICATION_LOG.md](VERIFICATION_LOG.md) for the full account. Historical
+literature-based-discovery cases are validation targets for recovery mechanics, not
+automatic biomedical truth labels.
 
 ## Tests
 
