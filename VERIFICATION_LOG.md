@@ -353,6 +353,43 @@ Both are recorded as open; any fix is a new card with a new pre-registration.
 
 ---
 
+### [2026-06-26] Post-hoc note on migraine/magnesium ground-truth strength (does NOT revise the verdict)
+
+Added after the held-out result was registered and merged. This is an interpretive
+observation, not a re-scoring. The verdict stands: migraine/magnesium = NON-RECOVERY,
+statistic frozen, no tuning.
+
+Observation (evidence checked 2026-06-27). The ground-truth for migraine/magnesium is
+clinically WEAKER and less definitive than assumed when the test was designed. A 2026
+systematic review (NOT a meta-analysis — no quantitative synthesis) covered 6 RCTs
+(~502 participants); results were formulation-dependent and inconsistent, with 3 of 6
+trials reporting favorable efficacy signals, and the certainty of evidence for migraine
+frequency and severity rated LOW due to risk of bias and inconsistency (Jagunmolu et al.,
+2026). An earlier NCCIH summary (updated 2021) cited a 2018 review of 5 studies / 253
+participants, 3 of 5 favorable, "possibly effective". (A 2025 quantitative meta-analysis
+exists but pools many supplements together — its counts cannot be attributed to magnesium,
+so it is not used here.) Swanson's 1988 case documents a coherent, disconnected MECHANISTIC
+path in the pre-1988 literature; it does not establish that magnesium treats migraine.
+
+Consequence — scoped strictly to OP1. Because the target itself is a thin, partially
+supported bridge, this single non-recovery is LESS DIAGNOSTIC for OP1 (sensitivity to
+thin mediation) than originally assumed: we cannot distinguish "the method is under-
+sensitive" from "the target is a genuinely weak/ambiguous bridge" on this case alone.
+This rescopes how much OP1 weight this one case carries; it does NOT mean the method
+recovered anything.
+
+OP2 is UNAFFECTED. The sibling false-positive (cluster headache, direct_sim=0.283,
+slips under direct_max=0.30, would be accepted with q=0.0135) is a STRUCTURAL defect of
+the statistic + gate. It holds regardless of whether magnesium clinically helps migraine
+and regardless of the benchmark's evidential strength. OP2 remains the stronger result
+and is not weakened by this note.
+
+Terminology: "true bridge" is avoided; use "historically documented LBD bridge". A
+historically documented discovery case is a recovery-mechanics validation target, NOT an
+automatic biomedical truth label.
+
+---
+
 ### [YYYY-MM-DD] Hypothesis: <first scientific hypothesis>
 
 **Question:**
