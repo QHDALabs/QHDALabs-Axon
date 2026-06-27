@@ -223,9 +223,9 @@ OP1/OP2):
 1. **Limited power on thin mediation** — the historically documented, very distant
    migraine/magnesium bridge (mediated=2.41) does not beat its nulls (p≈0.12); the
    statistic finds medium-mediation bridges (Raynaud) but misses very thin ones.
-   (Caveat: that benchmark is itself a thin, only "possibly effective" case, so this
-   single non-recovery is less diagnostic for this limitation — see VERIFICATION_LOG
-   post-hoc note.)
+   (Caveat: that benchmark is itself a thin case with low-certainty, formulation-
+   dependent evidence, so this single non-recovery is less diagnostic for this
+   limitation — see VERIFICATION_LOG post-hoc note.)
 2. **The gate does not separate siblings** — cluster headache (a *non-bridge* sibling
    of migraine) slips under the `direct_max=0.30` proximity gate (direct_sim=0.283)
    and would be falsely accepted as a stronger bridge than the true target — a

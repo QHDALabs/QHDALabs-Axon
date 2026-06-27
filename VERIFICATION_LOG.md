@@ -359,12 +359,17 @@ Added after the held-out result was registered and merged. This is an interpreti
 observation, not a re-scoring. The verdict stands: migraine/magnesium = NON-RECOVERY,
 statistic frozen, no tuning.
 
-Observation. The ground-truth for migraine/magnesium is clinically WEAKER and less
-definitive than assumed when the test was designed. Per NCCIH, evidence for magnesium
-in migraine is limited: a 2018 review of 5 studies / 253 participants found benefit in
-3 of 5, with an overall assessment of "possibly effective" — not established clinical
-fact. Swanson's 1988 case documents a coherent, disconnected MECHANISTIC path in the
-pre-1988 literature; it does not establish that magnesium treats migraine.
+Observation (evidence checked 2026-06-27). The ground-truth for migraine/magnesium is
+clinically WEAKER and less definitive than assumed when the test was designed. A 2026
+systematic review (NOT a meta-analysis — no quantitative synthesis) covered 6 RCTs
+(~502 participants); results were formulation-dependent and inconsistent, with 3 of 6
+trials reporting favorable efficacy signals, and the certainty of evidence for migraine
+frequency and severity rated LOW due to risk of bias and inconsistency (Jagunmolu et al.,
+2026). An earlier NCCIH summary (updated 2021) cited a 2018 review of 5 studies / 253
+participants, 3 of 5 favorable, "possibly effective". (A 2025 quantitative meta-analysis
+exists but pools many supplements together — its counts cannot be attributed to magnesium,
+so it is not used here.) Swanson's 1988 case documents a coherent, disconnected MECHANISTIC
+path in the pre-1988 literature; it does not establish that magnesium treats migraine.
 
 Consequence — scoped strictly to OP1. Because the target itself is a thin, partially
 supported bridge, this single non-recovery is LESS DIAGNOSTIC for OP1 (sensitivity to
