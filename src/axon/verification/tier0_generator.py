@@ -32,10 +32,10 @@ class PilotConfig:
     """Development values only; none are confirmatory until separately frozen."""
 
     n_peers: int = 24
-    documents_per_literature: int = 60
+    documents_per_literature: int = 20
     peer_document_ratio: float = 1.0
     background_topics: int = 8
-    background_documents_per_topic: int = 60
+    background_documents_per_topic: int = 20
     parent_terms: int = 16
     mechanism_terms: int = 8
     private_terms: int = 24
