@@ -10,7 +10,10 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 from math import ceil
-from typing import Callable, Mapping, Sequence
+from typing import TYPE_CHECKING, Callable, Mapping, Sequence
+
+if TYPE_CHECKING:
+    from .bridge import LiteratureContext
 
 
 ALPHA_RANK_NOMINAL = 0.05
@@ -198,7 +201,7 @@ def assess_pair_selectivity(
     )
 
 
-def frozen_v1_scorer(context: object) -> PairScorer:
+def frozen_v1_scorer(context: LiteratureContext) -> PairScorer:
     """Build the V2-A scorer from the frozen public V1 ``propose_bridge`` API."""
 
     from .bridge import DEFAULT_MESH_STOPLIST, propose_bridge
