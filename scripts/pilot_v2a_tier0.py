@@ -15,14 +15,19 @@ from dataclasses import replace
 from axon.relational_representation.literature_store import LiteratureStore
 from axon.types import Document
 from axon.verification.selectivity import PeerSet, assess_pair_selectivity, frozen_v1_scorer
-from axon.verification.tier0_generator import PilotConfig, SpreadMode, build_world
+from axon.verification.tier0_generator import (
+    PilotConfig,
+    SpreadMode,
+    SyntheticWorld,
+    build_world,
+)
 
 
 DEV_WIDTH_SEEDS = tuple(range(10))
 DEV_LATENT_PARENT_SEEDS = tuple(range(20))
 
 
-def _store(world, width, mode):
+def _store(world: SyntheticWorld, width: int, mode: SpreadMode) -> LiteratureStore:
     documents = [
         Document(
             doc_id=doc.doc_id,
@@ -37,9 +42,9 @@ def _store(world, width, mode):
 def run(config: PilotConfig) -> dict[str, object]:
     widths = tuple(range(config.n_peers + 1))
     modes = (SpreadMode.A_ONLY, SpreadMode.C_ONLY, SpreadMode.SYMMETRIC)
-    risk_counts = defaultdict(int)
-    aggregate_counts = defaultdict(int)
-    monotonicity_violations = []
+    risk_counts: defaultdict[tuple[str, int, str], int] = defaultdict(int)
+    aggregate_counts: defaultdict[tuple[str, int], int] = defaultdict(int)
+    monotonicity_violations: list[dict[str, object]] = []
 
     for seed in DEV_WIDTH_SEEDS:
         world = build_world(seed, config)

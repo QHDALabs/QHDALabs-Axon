@@ -41,7 +41,7 @@ def _normalize(text: str) -> str:
     return " ".join(text.split())
 
 
-def fetch_category(cat: str, domain: str, n: int) -> list[dict]:
+def fetch_category(cat: str, domain: str, n: int) -> list[dict[str, str]]:
     # sortBy=submittedDate gives a stable-ish, well-defined ordering at fetch time.
     url = (
         f"{API}?search_query=cat:{cat}"
@@ -52,7 +52,7 @@ def fetch_category(cat: str, domain: str, n: int) -> list[dict]:
         raw = resp.read().decode("utf-8", "replace")
     root = ET.fromstring(raw)
 
-    records: list[dict] = []
+    records: list[dict[str, str]] = []
     for entry in root.findall(f"{ATOM}entry"):
         arxiv_url = (entry.findtext(f"{ATOM}id") or "").strip()
         arxiv_id = arxiv_url.rsplit("/", 1)[-1]  # e.g. 2406.01234v1
@@ -79,7 +79,7 @@ def fetch_category(cat: str, domain: str, n: int) -> list[dict]:
 
 
 def main() -> None:
-    corpus: list[dict] = []
+    corpus: list[dict[str, str]] = []
     for i, (cat, domain, n) in enumerate(QUERIES):
         if i > 0:
             time.sleep(3)  # be polite to the arXiv API

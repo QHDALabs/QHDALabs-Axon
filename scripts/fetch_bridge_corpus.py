@@ -55,7 +55,8 @@ RETMAX = 60
 
 
 def _get(url: str) -> bytes:
-    return urllib.request.urlopen(url, timeout=60).read()
+    data: bytes = urllib.request.urlopen(url, timeout=60).read()
+    return data
 
 
 def esearch(term: str, retmax: int) -> list[str]:
@@ -66,10 +67,10 @@ def esearch(term: str, retmax: int) -> list[str]:
     return list(data["esearchresult"]["idlist"])
 
 
-def efetch(ids: list[str]) -> list[dict]:
+def efetch(ids: list[str]) -> list[dict[str, object]]:
     q = urllib.parse.urlencode({"db": "pubmed", "id": ",".join(ids), "retmode": "xml"})
     root = ET.fromstring(_get(BASE + "efetch.fcgi?" + q))
-    records = []
+    records: list[dict[str, object]] = []
     for art in root.findall(".//PubmedArticle"):
         pmid = art.findtext(".//PMID") or ""
         year = art.findtext(".//PubDate/Year") or ""
@@ -85,7 +86,7 @@ def efetch(ids: list[str]) -> list[dict]:
 
 
 def main() -> None:
-    corpus: list[dict] = []
+    corpus: list[dict[str, object]] = []
     for label, (role, term) in LITERATURES.items():
         ids = esearch(term, RETMAX)
         time.sleep(0.4)

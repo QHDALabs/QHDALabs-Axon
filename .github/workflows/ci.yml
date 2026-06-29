@@ -33,7 +33,7 @@ jobs:
           python -m pip install -e .
           pip install pytest mypy
       - name: mypy (strict; config in pyproject.toml)
-        run: mypy src
+        run: mypy src scripts
 
   test:
     runs-on: ubuntu-latest
