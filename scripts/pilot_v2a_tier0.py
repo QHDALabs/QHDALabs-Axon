@@ -39,7 +39,11 @@ def _store(world: SyntheticWorld, width: int, mode: SpreadMode) -> LiteratureSto
     return LiteratureStore(documents, background_labels=world.background_labels)
 
 
-def run(config: PilotConfig) -> dict[str, object]:
+def run_width_sweep(config: PilotConfig) -> dict[str, object]:
+    """Width sweep over all SpreadModes on DEV_WIDTH_SEEDS.
+
+    Returns the per-(mode, width) curves and any within-replicate monotonicity
+    reversals. Does NOT run the latent-parent pass (see run_latent_parent)."""
     widths = tuple(range(config.n_peers + 1))
     modes = (SpreadMode.A_ONLY, SpreadMode.C_ONLY, SpreadMode.SYMMETRIC)
     risk_counts: defaultdict[tuple[str, int, str], int] = defaultdict(int)
@@ -88,6 +92,13 @@ def run(config: PilotConfig) -> dict[str, object]:
                     "degradation_rate": aggregate_counts[(mode.value, width)] / len(DEV_WIDTH_SEEDS),
                 }
             )
+    return {"curves": curves, "monotonicity_violations": monotonicity_violations}
+
+
+def run_latent_parent(config: PilotConfig) -> dict[str, float]:
+    """Latent-parent pass (mechanism absent) over DEV_LATENT_PARENT_SEEDS.
+
+    Computed once per grid; independent of the width sweep."""
     latent_risk_a = 0
     latent_risk_c = 0
     latent_config = replace(config, mechanism_rate=0.0)
@@ -109,16 +120,24 @@ def run(config: PilotConfig) -> dict[str, object]:
             assessment.side_c.status.value == "pair_selectivity_not_demonstrated"
         )
     return {
+        "risk_rate_a": latent_risk_a / len(DEV_LATENT_PARENT_SEEDS),
+        "risk_rate_c": latent_risk_c / len(DEV_LATENT_PARENT_SEEDS),
+    }
+
+
+def run(config: PilotConfig) -> dict[str, object]:
+    """Single-cell pilot: width sweep + one latent-parent pass. JSON shape and CLI
+    behaviour are unchanged from before the run_width_sweep / run_latent_parent split."""
+    sweep = run_width_sweep(config)
+    latent = run_latent_parent(config)
+    return {
         "label": "DEVELOPMENT PILOT — NOT CONFIRMATORY",
         "development_width_seeds": list(DEV_WIDTH_SEEDS),
         "development_latent_parent_seeds": list(DEV_LATENT_PARENT_SEEDS),
         "config": config.__dict__,
-        "monotonicity_violations": monotonicity_violations,
-        "curves": curves,
-        "latent_parent": {
-            "risk_rate_a": latent_risk_a / len(DEV_LATENT_PARENT_SEEDS),
-            "risk_rate_c": latent_risk_c / len(DEV_LATENT_PARENT_SEEDS),
-        },
+        "monotonicity_violations": sweep["monotonicity_violations"],
+        "curves": sweep["curves"],
+        "latent_parent": latent,
     }
 
 
