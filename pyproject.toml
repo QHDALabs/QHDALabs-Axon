@@ -43,13 +43,14 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
-# ── Static typing (config-as-code: identical locally and in CI; CI runs `mypy src`) ──
+# ── Static typing (config-as-code: identical locally and in CI; CI runs `mypy src scripts`) ──
 # Axon is fully type-checked: the verification-before-discovery contract becomes a
 # STATIC guarantee, not just a runtime one. src-layout is made visible to mypy so the
-# package resolves as `axon`, not `src.axon`.
+# package resolves as `axon`, not `src.axon`; scripts/ is on the path too so sibling
+# dev-script imports (e.g. pilot_v2a_grid -> pilot_v2a_tier0) resolve under the gate.
 [tool.mypy]
 python_version = "3.12"
-mypy_path = "src"
+mypy_path = ["src", "scripts"]
 explicit_package_bases = true
 namespace_packages = true
 strict = true
