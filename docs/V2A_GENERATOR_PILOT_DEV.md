@@ -13,9 +13,11 @@ B = shared positive support passing max_df=0.5 and idf_min=1.0
 mediated = sum(min(w_A, w_C) over B)
 ```
 
-It was used because the workspace could not clone the complete repository. The
-production pilot script calls the real `LiteratureStore` and `propose_bridge` and
-must be rerun in the full repository before the pre-registration is frozen.
+It was a historical development diagnostic, used because the workspace could not
+clone the complete repository at the time. The real `LiteratureStore` + `propose_bridge`
+grid has SINCE been run via `scripts/pilot_v2a_grid.py` (PR #8) and reproduced the same
+rank-level outcomes — DEVELOPMENT, NOT CONFIRMATORY; rank-decision agreement is not
+value fidelity and does not bless the reconstruction below.
 
 ## Development configuration
 
@@ -75,7 +77,9 @@ RISK_C = 0.95
 
 ## Before freezing
 
-- rerun the pilot script against the complete repository's real V1 implementation;
+- **[DONE]** rerun the pilot script against the complete repository's real V1
+  implementation — done via `scripts/pilot_v2a_grid.py` on real V1 (PR #8);
+  DEVELOPMENT, NOT CONFIRMATORY;
 - keep the difficult interaction in the contract grid unless a new, independently
   justified scope rule is pre-registered before any confirmatory run;
 - derive numeric endpoint criteria from the declared claim and pilot power;
