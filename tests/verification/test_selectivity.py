@@ -61,3 +61,19 @@ def test_one_sided_risk_degrades_the_aggregate():
     clean = assess_rank(1.0, [0.0] * 19)
     assert aggregate_sides(risk, clean) is AggregateStatus.DEGRADE_A
     assert aggregate_sides(clean, risk) is AggregateStatus.DEGRADE_C
+
+
+def test_valid_peerset_constructs():
+    peers = PeerSet("a", ("p1", "p2", "p3", "m1", "m2"), ("p1", "p2", "p3"), ("m1", "m2"))
+    assert peers.profiled_ids == ("p1", "p2", "p3")
+    assert peers.missing_ids == ("m1", "m2")
+
+
+def test_duplicate_profiled_id_raises():
+    with pytest.raises(ValueError, match="profiled_ids must be deduplicated"):
+        PeerSet("a", ("p1", "p2"), ("p1", "p1", "p2"), ())
+
+
+def test_duplicate_missing_id_raises():
+    with pytest.raises(ValueError, match="missing_ids must be deduplicated"):
+        PeerSet("a", ("p1", "m1"), ("p1",), ("m1", "m1"))

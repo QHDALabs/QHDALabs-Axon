@@ -60,6 +60,10 @@ class PeerSet:
             raise ValueError("PeerSet must not include its endpoint")
         if len(ontology) != len(self.ontology_ids):
             raise ValueError("ontology_ids must be deduplicated")
+        if len(profiled) != len(self.profiled_ids):
+            raise ValueError("profiled_ids must be deduplicated")
+        if len(missing) != len(self.missing_ids):
+            raise ValueError("missing_ids must be deduplicated")
         if not profiled.isdisjoint(missing):
             raise ValueError("profiled_ids and missing_ids must be disjoint")
         if profiled | missing != ontology:
