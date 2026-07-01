@@ -240,6 +240,23 @@ axes, not a "better" or "worse" mechanism. See
 literature-based-discovery cases are validation targets for recovery mechanics, not
 automatic biomedical truth labels.
 
+### V2-A pair-selectivity audit (Tier 0, in development)
+
+A pair-selectivity audit module (`verification/selectivity.py`) is present as a
+**shadow / audit-only** mechanism: it annotates, it does **not** change verdicts and
+does **not** gate anything. Its **Tier 0 is IN DEVELOPMENT — not validated, and not a
+Tier 0 pass.** The canonical design doc is
+[docs/ABC_BRIDGE_V2A_TIER0_DRAFT.md](docs/ABC_BRIDGE_V2A_TIER0_DRAFT.md).
+
+The one-shot development grid runs on real V1 and emits a JSON labelled
+"DEVELOPMENT PILOT — NOT CONFIRMATORY":
+
+```bash
+python scripts/pilot_v2a_grid.py   # development calibration; output is NOT confirmatory
+```
+
+See [VERIFICATION_LOG.md](VERIFICATION_LOG.md) for the development-pilot outcome.
+
 ## Tests
 
 ```bash

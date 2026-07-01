@@ -390,6 +390,47 @@ automatic biomedical truth label.
 
 ---
 
+### [2026-06-29] Session: V2-A Tier 0 development pilot (PRs #7, #8) — DEVELOPMENT, NOT CONFIRMATORY
+
+Engineering entry. **DEVELOPMENT calibration only — NOT confirmatory Tier 0 evidence,
+NOT a Tier 0 pass, NOT a validation of the method.** No V2-A Tier 0 pre-registration is
+committed or frozen. Every number below is a development-pilot output and is labelled.
+
+**Merged work.**
+- PR #7 (merged): consolidated the V2-A docs under `docs/`; added the pair-selectivity
+  module (`verification/selectivity.py`), the Tier 0 generator
+  (`verification/tier0_generator.py`), the pilot script, and tests. PilotConfig
+  development document-count defaults changed 60 → 20 (development values only).
+  `frozen_v1_scorer` context annotation narrowed to `LiteratureContext` via a
+  TYPE_CHECKING import (the runtime `propose_bridge` import stays lazy).
+- PR #8 (merged): one-shot DEVELOPMENT grid runner (`scripts/pilot_v2a_grid.py`) run on
+  REAL V1 (`frozen_v1_scorer → propose_bridge → LiteratureStore`; fail-loud, no fallback
+  scorer). Split `run()` into `run_width_sweep` / `run_latent_parent`; brought `scripts/`
+  under the strict mypy gate (`mypy src scripts`).
+
+**Development pilot outcome (real V1; the full grid JSON is a local artifact, not committed).**
+Framing note: the only claim here is "real V1 produced these numbers." Rank-decision
+agreement is NOT value-fidelity, and nothing here confirms the earlier reconstruction or
+constitutes a Tier 0 pass.
+- *DEVELOPMENT — NOT CONFIRMATORY:* **0 within-replicate monotonicity reversals** across
+  all 11 grid cells and all three spread modes. This meets the S1 zero-reversal PILOT
+  criterion — a development result, **not** a Tier 0 pass.
+- *DEVELOPMENT — NOT CONFIRMATORY:* latent_parent (M absent): risk_rate_a = **1.00**,
+  risk_rate_c = **0.95**.
+- *DEVELOPMENT — NOT CONFIRMATORY:* contract cell `thin_half_n4` (M=0.15 / ratio=0.5 /
+  noise=4): real-V1 degradation **0.40 / 0.40** — confirms the low-power boundary is
+  genuine, not a reconstruction artifact. Recorded plainly, not softened. The probes
+  `probe_20_h_2`, `probe_20_h_4`, `probe_25_h_4` sit in the same
+  half-corpus × noise × thin-M corner.
+
+**Still open — nothing frozen.** Numeric PASS criteria, the MeSH 2026 artifact URL + SHA,
+the confirmatory seed derivation, the cold review, and the pre-registration provenance
+question all remain unresolved. No V2-A Tier 0 pre-registration is committed or frozen;
+`ABC_BRIDGE_V2A_TIER0_PRE_REGISTRATION.md` is still an uncommitted draft. `bridge.py`
+unchanged (blob `1969f43d8fb172f40bc4c878d519f406ac7499f2`).
+
+---
+
 ### [YYYY-MM-DD] Hypothesis: <first scientific hypothesis>
 
 **Question:**
