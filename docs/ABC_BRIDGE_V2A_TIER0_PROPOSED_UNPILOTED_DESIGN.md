@@ -77,7 +77,7 @@ fields (§5) enable its audit but do not replace it.
 
 ---
 
-## 2. Method specification (FROZEN)
+## 2. Method specification (PROPOSED / UNPILOTED — not frozen)
 
 ### 2.1 Gate direction
 
@@ -222,7 +222,7 @@ exchangeability assumption (L4), the nominal false-release probability is bounde
 
 ---
 
-## 3. Tier 0 generator (FROZEN)
+## 3. Tier 0 generator (PROPOSED / UNPILOTED — not frozen)
 
 ### 3.1 What Tier 0 tests, and what it cannot
 
@@ -293,7 +293,7 @@ S3 COVERAGE/RESOLUTION    : PeerSet cardinality below n_min. Expect UNASSESSABLE
 
 ---
 
-## 4. Frozen expectations (shape, not point)
+## 4. Expectations (PROPOSED / UNPILOTED — not frozen)
 
 For each scenario we freeze the **expected qualitative behaviour of the verdict
 distribution over replicates**, never a single deterministic outcome on emergent data:
