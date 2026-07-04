@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Small, hand-checked MeSH descriptor fragment for peer-selection tests.
+  It follows the NLM DescriptorRecordSet schema but the descriptors are a
+  synthetic, minimal hierarchy (not the real MeSH content). It exists ONLY to
+  exercise parser and one-parent-up selection logic on committed data. It is NOT
+  the frozen production MeSH release and its content carries no ontological claim.
+
+  Shape (under a synthetic C14.907 parent):
+      C14.907            Vascular Diseases        (D000200) - the parent
+        C14.907.253      Sibling One              (D000220)
+        C14.907.355      Sibling Two              (D000230)
+          C14.907.355.590  Polyhierarchic Desc.   (D000240) [also at C20.111]
+        C14.907.617      Endpoint Disease         (D000210) - endpoint
+          C14.907.617.500  Endpoint Subtype       (D000211) - endpoint subtree
+      C20.111            Polyhierarchic Desc.      (D000240) second position
+-->
+<DescriptorRecordSet>
+  <DescriptorRecord>
+    <DescriptorUI>D000200</DescriptorUI>
+    <DescriptorName><String>Vascular Diseases</String></DescriptorName>
+    <TreeNumberList>
+      <TreeNumber>C14.907</TreeNumber>
+    </TreeNumberList>
+  </DescriptorRecord>
+  <DescriptorRecord>
+    <DescriptorUI>D000210</DescriptorUI>
+    <DescriptorName><String>Endpoint Disease</String></DescriptorName>
+    <TreeNumberList>
+      <TreeNumber>C14.907.617</TreeNumber>
+    </TreeNumberList>
+  </DescriptorRecord>
+  <DescriptorRecord>
+    <DescriptorUI>D000211</DescriptorUI>
+    <DescriptorName><String>Endpoint Subtype</String></DescriptorName>
+    <TreeNumberList>
+      <TreeNumber>C14.907.617.500</TreeNumber>
+    </TreeNumberList>
+  </DescriptorRecord>
+  <DescriptorRecord>
+    <DescriptorUI>D000220</DescriptorUI>
+    <DescriptorName><String>Sibling One</String></DescriptorName>
+    <TreeNumberList>
+      <TreeNumber>C14.907.253</TreeNumber>
+    </TreeNumberList>
+  </DescriptorRecord>
+  <DescriptorRecord>
+    <DescriptorUI>D000230</DescriptorUI>
+    <DescriptorName><String>Sibling Two</String></DescriptorName>
+    <TreeNumberList>
+      <TreeNumber>C14.907.355</TreeNumber>
+    </TreeNumberList>
+  </DescriptorRecord>
+  <DescriptorRecord>
+    <DescriptorUI>D000240</DescriptorUI>
+    <DescriptorName><String>Polyhierarchic Descriptor</String></DescriptorName>
+    <TreeNumberList>
+      <TreeNumber>C14.907.355.590</TreeNumber>
+      <TreeNumber>C20.111</TreeNumber>
+    </TreeNumberList>
+  </DescriptorRecord>
+</DescriptorRecordSet>
