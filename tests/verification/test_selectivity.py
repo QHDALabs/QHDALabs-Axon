@@ -222,3 +222,29 @@ def test_aggregate_risk_takes_precedence_over_unassessable():
     # side is merely UNASSESSABLE. Risk is never masked by a coverage gap.
     assert aggregate_sides(_side_risk(), _side_unassessable()) is AggregateStatus.DEGRADE_A
     assert aggregate_sides(_side_unassessable(), _side_risk()) is AggregateStatus.DEGRADE_C
+
+
+# --- PeerSet construction invariants: the remaining validation raises ----------------
+# Existing tests cover profiled/missing dedup and the valid construct. These close the
+# rest of __post_init__: endpoint exclusion, ontology dedup, profiled/missing disjoint,
+# and the profiled|missing == ontology partition. Validation only; no production change.
+
+
+def test_peerset_rejects_endpoint_in_ontology():
+    with pytest.raises(ValueError, match="PeerSet must not include its endpoint"):
+        PeerSet("a", ("a", "p1"), ("p1",), ())
+
+
+def test_peerset_rejects_duplicate_ontology_id():
+    with pytest.raises(ValueError, match="ontology_ids must be deduplicated"):
+        PeerSet("a", ("p1", "p1"), ("p1",), ())
+
+
+def test_peerset_rejects_profiled_missing_overlap():
+    with pytest.raises(ValueError, match="profiled_ids and missing_ids must be disjoint"):
+        PeerSet("a", ("p1", "p2"), ("p1", "p2"), ("p2",))
+
+
+def test_peerset_requires_profiled_and_missing_to_partition_ontology():
+    with pytest.raises(ValueError, match="must partition ontology_ids"):
+        PeerSet("a", ("p1", "p2", "p3"), ("p1",), ("p2",))
