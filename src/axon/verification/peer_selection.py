@@ -1,11 +1,14 @@
-"""MeSH descriptor ontology model and parser — Decision-1, step 1 (pure, offline).
+"""MeSH ontology, one-parent-up peer selection, and profile resolution — V2-A
+Decision-1 (pure, offline).
 
-This is the first component of V2-A deterministic peer selection. It parses a MeSH
-descriptor XML fragment into an immutable ontology keyed by ``DescriptorUI``, with
-parent/child relationships derived from MeSH tree numbers. It performs NO peer
-selection (the one-parent-up rule is a separate, later step) and touches NO network
-and NO production artifact — it operates on whatever XML fragment it is handed, so
-tests run against small committed fixtures rather than the frozen MeSH release.
+This module carries the deterministic half of V2-A peer selection, built in steps:
+(1) parse a MeSH descriptor XML fragment into an immutable ontology keyed by
+``DescriptorUI`` with parent/child derived from tree numbers; (2) select one-parent-up
+branch peers for an endpoint (:func:`select_one_parent_up`); (3) resolve those peers
+into a gate-ready :class:`PeerSet` by profile availability (:func:`resolve_peerset`).
+It touches NO network and NO production artifact and mutates NO verification result —
+it operates on whatever XML fragment and availability predicate it is handed, so tests
+run against small committed fixtures rather than the frozen MeSH release.
 
 Schema consumed (only these elements are read; any others in a real record are
 ignored). This mirrors the NLM ``DescriptorRecordSet`` schema and MUST be confirmed
@@ -35,8 +38,10 @@ silently producing a partial tree.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List, Mapping, Optional, Tuple
+from typing import Callable, Dict, List, Mapping, Optional, Sequence, Tuple
 from xml.etree import ElementTree as ET
+
+from .selectivity import PeerSet
 
 
 class MeshParseError(ValueError):
@@ -214,3 +219,42 @@ def select_one_parent_up(tree: MeshTree, endpoint_ui: str) -> Tuple[str, ...]:
                 continue
             peer_uis.add(peer_ui)
     return tuple(sorted(peer_uis))
+
+
+#: Reports whether a selected peer descriptor has a usable V1 literature profile.
+ProfileAvailability = Callable[[str], bool]
+
+
+def resolve_peerset(
+    endpoint_id: str,
+    ontology_ids: Sequence[str],
+    has_profile: ProfileAvailability,
+    *,
+    provenance: Optional[Mapping[str, object]] = None,
+) -> PeerSet:
+    """Partition selected ontology peers into profiled vs missing, as a :class:`PeerSet`.
+
+    ``ontology_ids`` are the DescriptorUIs returned by :func:`select_one_parent_up`.
+    ``has_profile(peer_ui)`` reports whether that peer has a usable V1 literature
+    profile. Peers WITH a profile go to ``profiled_ids`` and enter the rank
+    denominator; peers WITHOUT one go to ``missing_ids`` and are NEVER scored as
+    artificial zeros (see the :class:`PeerSet` contract and the S3 rank gate). Input
+    order is preserved, so the partition is deterministic. The predicate is called
+    exactly once per peer.
+
+    Pure glue: it calls no scorer and mutates no verdict. It builds a
+    :class:`PeerSet`, whose invariants (endpoint excluded, deduplicated, disjoint,
+    partitioning) are enforced on construction — so a malformed selection fails
+    closed here rather than reaching the gate.
+    """
+    profiled: List[str] = []
+    missing: List[str] = []
+    for peer in ontology_ids:
+        (profiled if has_profile(peer) else missing).append(peer)
+    return PeerSet(
+        endpoint_id=endpoint_id,
+        ontology_ids=tuple(ontology_ids),
+        profiled_ids=tuple(profiled),
+        missing_ids=tuple(missing),
+        provenance=dict(provenance or {}),
+    )
