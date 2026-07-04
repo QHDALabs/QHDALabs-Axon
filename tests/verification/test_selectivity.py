@@ -176,3 +176,49 @@ def test_s3_missing_profiles_never_enter_rank_denominator():
     assert result.side_a.n_missing == len(missing)
     assert result.side_a.p_rank_nominal == pytest.approx(1.0 / (n_min + 1))
     assert result.side_a.status is SideStatus.NOT_DETECTED
+
+
+# --- aggregate_sides truth table: deterministic IUT-for-pass / OR-for-risk closure ---
+# Completes the AggregateStatus outcomes not already pinned (existing tests cover
+# NO_DEGRADATION, DEGRADE_A, DEGRADE_C, DEGRADE_COVERAGE_A). Pure arithmetic over
+# aggregate_sides — no generator, no real V1, no gate-logic change. Side states are
+# built with assess_rank at / below the exposed n_min, so this stays scorer-agnostic.
+
+
+def _side_risk():
+    # one peer ties m0 -> k=1, p = 2/(n_min+1) > alpha -> RISK (assessable)
+    n_min = minimum_rank_resolution(0.05)
+    return assess_rank(1.0, [1.0] + [0.0] * (n_min - 1))
+
+
+def _side_clean():
+    # original strictly top-ranked at exactly n_min -> p = alpha -> NOT_DETECTED
+    n_min = minimum_rank_resolution(0.05)
+    return assess_rank(1.0, [0.0] * n_min)
+
+
+def _side_unassessable():
+    # n_profiled = n_min - 1 -> below resolution -> UNASSESSABLE
+    n_min = minimum_rank_resolution(0.05)
+    return assess_rank(1.0, [0.0] * (n_min - 1))
+
+
+def test_aggregate_both_sides_risk_degrades_both():
+    assert _side_risk().status is SideStatus.RISK
+    assert aggregate_sides(_side_risk(), _side_risk()) is AggregateStatus.DEGRADE_BOTH
+
+
+def test_aggregate_coverage_degradation_c_and_both():
+    assert _side_unassessable().status is SideStatus.UNASSESSABLE
+    assert aggregate_sides(_side_clean(), _side_unassessable()) is AggregateStatus.DEGRADE_COVERAGE_C
+    assert (
+        aggregate_sides(_side_unassessable(), _side_unassessable())
+        is AggregateStatus.DEGRADE_COVERAGE_BOTH
+    )
+
+
+def test_aggregate_risk_takes_precedence_over_unassessable():
+    # OR-for-risk beats coverage: a RISK side degrades by risk even when the other
+    # side is merely UNASSESSABLE. Risk is never masked by a coverage gap.
+    assert aggregate_sides(_side_risk(), _side_unassessable()) is AggregateStatus.DEGRADE_A
+    assert aggregate_sides(_side_unassessable(), _side_risk()) is AggregateStatus.DEGRADE_C
