@@ -164,3 +164,53 @@ def parse_descriptor_xml(xml_text: str) -> MeshTree:
             ui_by_tree[tree_number] = ui
         by_ui[ui] = Descriptor(ui=ui, name=name, tree_numbers=tuple(sorted(trees)))
     return MeshTree(_by_ui=by_ui, _ui_by_tree=ui_by_tree)
+
+
+#: The single, frozen neighbourhood radius for V2-A peer selection (§2.2). It is a
+#: prespecified protocol parameter; changing it is a new card, not an edit here.
+ONE_PARENT_UP = "ONE_PARENT_UP"
+
+
+def select_one_parent_up(tree: MeshTree, endpoint_ui: str) -> Tuple[str, ...]:
+    """Deterministic one-parent-up branch peers for an endpoint (Decision-1, §2.2).
+
+    For every tree position of the endpoint: go exactly one parent up, take every
+    descriptor anywhere under that parent (sibling *subgraphs*, not only immediate
+    siblings), then exclude the endpoint itself and its entire descendant subtree.
+    The results are unioned across all of the endpoint's positions (full
+    polyhierarchy) and deduplicated by stable ``DescriptorUI``. The rule never
+    ascends to a grandparent, and the parent descriptor itself is never a peer
+    (it is not *under* itself).
+
+    Fail-closed: returns an empty tuple when no eligible branch peers exist (e.g.
+    the endpoint has no siblings, or sits at a top-level number with no parent).
+    An empty result means "not assessable against this ontology", to be surfaced
+    by the caller as coverage — never silently treated as "no risk". Raises
+    ``KeyError`` if ``endpoint_ui`` is not in ``tree``.
+
+    Returns the peer ``DescriptorUI``s sorted, so the output is independent of
+    record order in the source fragment.
+    """
+    endpoint = tree.descriptor(endpoint_ui)
+
+    # Descriptors to exclude: the endpoint and every descriptor in its descendant
+    # subtree, taken across all of the endpoint's tree positions (identity-based,
+    # so a polyhierarchic descendant is excluded wherever it appears).
+    excluded_uis = {endpoint_ui}
+    for position in endpoint.tree_numbers:
+        for tree_number in tree.descendant_tree_numbers(position):
+            descendant_ui = tree.ui_at(tree_number)
+            if descendant_ui is not None:
+                excluded_uis.add(descendant_ui)
+
+    peer_uis: set[str] = set()
+    for position in endpoint.tree_numbers:
+        parent = parent_tree_number(position)
+        if parent is None:
+            continue  # top-level position: no parent to branch from
+        for tree_number in tree.descendant_tree_numbers(parent):
+            peer_ui = tree.ui_at(tree_number)
+            if peer_ui is None or peer_ui in excluded_uis:
+                continue
+            peer_uis.add(peer_ui)
+    return tuple(sorted(peer_uis))
