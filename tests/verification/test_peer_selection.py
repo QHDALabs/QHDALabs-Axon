@@ -53,11 +53,11 @@ def test_descendants_include_full_subtree():
     )
 
 
-def test_ui_at_resolves_occupied_positions_only():
+def test_owners_at_resolves_occupied_positions_only():
     tree = _tree()
-    assert tree.ui_at("C14.907.617") == "D000210"
-    assert tree.ui_at("C14") is None          # bare category node — no descriptor
-    assert tree.ui_at("C99.999") is None      # absent
+    assert tree.owners_at("C14.907.617") == ("D000210",)
+    assert tree.owners_at("C14") == ()          # bare category node — no descriptor
+    assert tree.owners_at("C99.999") == ()      # absent
 
 
 def test_parse_rejects_duplicate_descriptor_ui():
@@ -73,7 +73,9 @@ def test_parse_rejects_duplicate_descriptor_ui():
         parse_descriptor_xml(xml)
 
 
-def test_parse_rejects_tree_number_shared_by_two_descriptors():
+def test_parse_tolerates_shared_tree_number_and_reports_collision():
+    # Real MeSH shares tree positions (e.g. B03.300.390.400.001 -> D047991, D048013 in
+    # MeSH 2026). The parser must tolerate this and surface it, never abort.
     xml = (
         "<DescriptorRecordSet>"
         "<DescriptorRecord><DescriptorUI>D1</DescriptorUI>"
@@ -82,7 +84,18 @@ def test_parse_rejects_tree_number_shared_by_two_descriptors():
         "<TreeNumberList><TreeNumber>C1.1</TreeNumber></TreeNumberList></DescriptorRecord>"
         "</DescriptorRecordSet>"
     )
-    with pytest.raises(MeshParseError, match="claimed by both"):
+    tree = parse_descriptor_xml(xml)
+    assert tree.owners_at("C1.1") == ("D1", "D2")
+    assert tree.tree_number_collisions() == {"C1.1": ("D1", "D2")}
+
+
+def test_parse_still_rejects_duplicate_tree_number_within_one_descriptor():
+    xml = (
+        "<DescriptorRecordSet><DescriptorRecord><DescriptorUI>D1</DescriptorUI>"
+        "<TreeNumberList><TreeNumber>C1.1</TreeNumber><TreeNumber>C1.1</TreeNumber>"
+        "</TreeNumberList></DescriptorRecord></DescriptorRecordSet>"
+    )
+    with pytest.raises(MeshParseError, match="duplicate TreeNumber"):
         parse_descriptor_xml(xml)
 
 
