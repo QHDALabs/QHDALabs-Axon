@@ -257,6 +257,20 @@ python scripts/pilot_v2a_grid.py   # development calibration; output is NOT conf
 
 See [VERIFICATION_LOG.md](VERIFICATION_LOG.md) for the development-pilot outcome.
 
+The deterministic half of the audit's **peer selection (Decision-1)** is now
+scaffolded and unit-tested, independent of any confirmatory run.
+`verification/peer_selection.py` parses a MeSH descriptor fragment into an immutable
+ontology, selects **one-parent-up branch peers** for an endpoint (sibling subgraphs,
+polyhierarchy union, endpoint and its subtree excluded, dedup by `DescriptorUI`,
+fail-closed when no peers exist), and resolves those peers into a gate-ready
+`PeerSet` by profile availability (missing peers never become artificial zeros). It
+is **pure and offline** — it runs on small committed MeSH fixtures, not a production
+release — with Layer 1 determinism tests and one Layer 3 wiring test (design §5). This
+is scaffolding only: it is **still shadow / audit-only and still not a Tier 0 pass**.
+The frozen production MeSH artifact and its SHA, the numeric PASS criteria (§6/§7), the
+confirmatory seed derivation, and cold review all remain open before any confirmatory
+Tier 0 run.
+
 ## Tests
 
 ```bash
