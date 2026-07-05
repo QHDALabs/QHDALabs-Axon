@@ -2,17 +2,17 @@
 Decision-1 (pure, offline).
 
 This module carries the deterministic half of V2-A peer selection, built in steps:
-(1) parse a MeSH descriptor XML fragment into an immutable ontology keyed by
-``DescriptorUI`` with parent/child derived from tree numbers; (2) select one-parent-up
-branch peers for an endpoint (:func:`select_one_parent_up`); (3) resolve those peers
-into a gate-ready :class:`PeerSet` by profile availability (:func:`resolve_peerset`).
-It touches NO network and NO production artifact and mutates NO verification result —
-it operates on whatever XML fragment and availability predicate it is handed, so tests
-run against small committed fixtures rather than the frozen MeSH release.
+(1) parse a MeSH descriptor XML source into an immutable ontology keyed by
+``DescriptorUI`` with parent/child derived from tree numbers — from a small in-memory
+fragment (:func:`parse_descriptor_xml`) or, memory-bounded, streamed from the full
+production file (:func:`parse_descriptor_file`); (2) select one-parent-up branch peers
+for an endpoint (:func:`select_one_parent_up`); (3) resolve those peers into a
+gate-ready :class:`PeerSet` by profile availability (:func:`resolve_peerset`).
+It touches NO network and mutates NO verification result.
 
 Schema consumed (only these elements are read; any others in a real record are
-ignored). This mirrors the NLM ``DescriptorRecordSet`` schema and MUST be confirmed
-against the frozen production ``desc<release>.xml`` before any confirmatory use::
+ignored). This mirrors the NLM ``DescriptorRecordSet`` schema, confirmed against the
+frozen production ``desc<release>.xml``::
 
     <DescriptorRecordSet>
       <DescriptorRecord>
@@ -26,13 +26,21 @@ against the frozen production ``desc<release>.xml`` before any confirmatory use:
       ...
     </DescriptorRecordSet>
 
-MeSH tree numbers are dot-separated hierarchy paths (e.g. ``C14.907.253``): the
-parent of a tree number is the path with its final segment removed, and a top-level
-number (no dot) has no parent within the descriptor set. A single descriptor may
-occupy several tree positions (polyhierarchy); identity is always ``DescriptorUI``.
+MeSH tree numbers are dot-separated hierarchy paths (e.g. ``C14.907.253``): the parent
+of a tree number is the path with its final segment removed, and a top-level number
+(no dot) has no parent within the descriptor set. A single descriptor may occupy
+several tree positions (polyhierarchy); identity is always ``DescriptorUI``.
 
-Fail-closed by design: a malformed or ambiguous fragment raises rather than
-silently producing a partial tree.
+**Shared tree positions are real.** In production MeSH a single tree number can be
+owned by more than one descriptor (e.g. `B03.300.390.400.001` is owned by both
+`D047991` and `D048013` in MeSH 2026). The model reflects this faithfully rather than
+forcing artificial uniqueness: a tree number maps to a *tuple* of owner UIs
+(:meth:`MeshTree.owners_at`), collisions are surfaced
+(:meth:`MeshTree.tree_number_collisions`), and endpoint exclusion is **conservative**
+(any descriptor sharing an endpoint position or subtree position is excluded from
+peers). A tree number repeated *within one descriptor*, an empty/malformed tree
+number, an empty or duplicate ``DescriptorUI``, or a wrong root element still fail
+closed.
 """
 
 from __future__ import annotations
@@ -45,7 +53,7 @@ from .selectivity import PeerSet
 
 
 class MeshParseError(ValueError):
-    """Raised when a MeSH descriptor fragment is malformed or ambiguous."""
+    """Raised when a MeSH descriptor source is malformed or internally inconsistent."""
 
 
 @dataclass(frozen=True)
@@ -69,18 +77,21 @@ def parent_tree_number(tree_number: str) -> Optional[str]:
 
 @dataclass(frozen=True)
 class MeshTree:
-    """Immutable MeSH ontology fragment, queryable by UI and by tree number.
+    """Immutable MeSH ontology, queryable by UI and by tree number.
 
-    Built by :func:`parse_descriptor_xml`. Deterministic: every multi-valued
-    accessor returns results in a stable sorted order, so downstream peer
-    selection is reproducible regardless of record order in the source fragment.
+    Built by :func:`parse_descriptor_xml` / :func:`parse_descriptor_file`. Deterministic:
+    every multi-valued accessor returns results in a stable sorted order, so downstream
+    peer selection is reproducible regardless of record order in the source.
+
+    ``_owners_by_tree`` maps a tree number to the tuple of DescriptorUIs that occupy it
+    — usually one, but genuinely more than one where production MeSH shares a position.
     """
 
     _by_ui: Mapping[str, Descriptor]
-    _ui_by_tree: Mapping[str, str]
+    _owners_by_tree: Mapping[str, Tuple[str, ...]]
 
     def uis(self) -> Tuple[str, ...]:
-        """All DescriptorUIs in the fragment, sorted."""
+        """All DescriptorUIs in the source, sorted."""
         return tuple(sorted(self._by_ui))
 
     def has(self, ui: str) -> bool:
@@ -96,24 +107,33 @@ class MeshTree:
         """Tree numbers this descriptor occupies (sorted, deduplicated)."""
         return self.descriptor(ui).tree_numbers
 
-    def ui_at(self, tree_number: str) -> Optional[str]:
-        """DescriptorUI occupying exactly this tree number, or ``None`` if unoccupied.
+    def owners_at(self, tree_number: str) -> Tuple[str, ...]:
+        """DescriptorUIs occupying exactly this tree number (sorted).
 
-        An unoccupied number (e.g. a bare category root like ``C14``) returns
-        ``None`` rather than raising: it is a valid gap in the tree, not an error.
+        Empty tuple for an unoccupied number (e.g. a bare category root like ``C14``) —
+        a valid gap, not an error. Usually one UI; more than one where the position is
+        genuinely shared in MeSH.
         """
-        return self._ui_by_tree.get(tree_number)
+        return self._owners_by_tree.get(tree_number, ())
+
+    def tree_number_collisions(self) -> Dict[str, Tuple[str, ...]]:
+        """Tree numbers owned by more than one descriptor (sorted keys). Empty if none."""
+        return {
+            t: owners
+            for t, owners in sorted(self._owners_by_tree.items())
+            if len(owners) > 1
+        }
 
     def child_tree_numbers(self, tree_number: str) -> Tuple[str, ...]:
         """Occupied tree numbers whose *immediate* parent is ``tree_number`` (sorted)."""
         return tuple(
-            sorted(t for t in self._ui_by_tree if parent_tree_number(t) == tree_number)
+            sorted(t for t in self._owners_by_tree if parent_tree_number(t) == tree_number)
         )
 
     def descendant_tree_numbers(self, tree_number: str) -> Tuple[str, ...]:
         """Occupied tree numbers strictly *under* ``tree_number`` at any depth (sorted)."""
         prefix = tree_number + "."
-        return tuple(sorted(t for t in self._ui_by_tree if t.startswith(prefix)))
+        return tuple(sorted(t for t in self._owners_by_tree if t.startswith(prefix)))
 
 
 def _child_text(record: ET.Element, path: str) -> str:
@@ -123,15 +143,46 @@ def _child_text(record: ET.Element, path: str) -> str:
     return element.text.strip()
 
 
-def parse_descriptor_xml(xml_text: str) -> MeshTree:
-    """Parse a MeSH ``DescriptorRecordSet`` fragment into a :class:`MeshTree`.
+def _ingest_record(
+    record: ET.Element,
+    by_ui: Dict[str, Descriptor],
+    owners: Dict[str, List[str]],
+) -> None:
+    """Validate one ``DescriptorRecord`` and fold it into the accumulating maps.
 
-    Fail-closed. Raises :class:`MeshParseError` on: invalid XML; a root other than
-    ``DescriptorRecordSet``; a missing/empty ``DescriptorUI``; a duplicate
-    ``DescriptorUI``; a malformed (empty-segment) tree number; a tree number
-    repeated within one descriptor; or the same tree number claimed by two
-    descriptors. A descriptor with no tree numbers is allowed — it simply occupies
-    no position and can never be selected as a peer.
+    Fail-closed on an empty/duplicate ``DescriptorUI``, a malformed (empty-segment)
+    tree number, or a tree number repeated *within this record*. A tree number already
+    owned by a *different* descriptor is appended (shared positions are real MeSH).
+    """
+    ui = _child_text(record, "DescriptorUI")
+    if not ui:
+        raise MeshParseError("DescriptorRecord without a non-empty DescriptorUI")
+    if ui in by_ui:
+        raise MeshParseError(f"duplicate DescriptorUI: {ui!r}")
+    name = _child_text(record, "DescriptorName/String")
+    trees: List[str] = []
+    for tn_element in record.findall("TreeNumberList/TreeNumber"):
+        tree_number = (tn_element.text or "").strip()
+        if not tree_number or any(seg == "" for seg in tree_number.split(".")):
+            raise MeshParseError(f"malformed TreeNumber {tree_number!r} for {ui!r}")
+        if tree_number in trees:
+            raise MeshParseError(f"duplicate TreeNumber {tree_number!r} within {ui!r}")
+        trees.append(tree_number)
+        owners.setdefault(tree_number, []).append(ui)
+    by_ui[ui] = Descriptor(ui=ui, name=name, tree_numbers=tuple(sorted(trees)))
+
+
+def _finalize_owners(owners: Dict[str, List[str]]) -> Dict[str, Tuple[str, ...]]:
+    return {tree_number: tuple(sorted(uis)) for tree_number, uis in owners.items()}
+
+
+def parse_descriptor_xml(xml_text: str) -> MeshTree:
+    """Parse an in-memory MeSH ``DescriptorRecordSet`` fragment into a :class:`MeshTree`.
+
+    For the multi-hundred-MB production release use :func:`parse_descriptor_file`, which
+    streams; this one holds the whole document in memory and suits committed fixtures.
+    Raises :class:`MeshParseError` on invalid XML or a wrong root element; per-record
+    validation is shared with the streaming parser (see :func:`_ingest_record`).
     """
     try:
         root = ET.fromstring(xml_text)
@@ -141,34 +192,43 @@ def parse_descriptor_xml(xml_text: str) -> MeshTree:
         raise MeshParseError(
             f"root element must be DescriptorRecordSet, got {root.tag!r}"
         )
-
     by_ui: Dict[str, Descriptor] = {}
-    ui_by_tree: Dict[str, str] = {}
+    owners: Dict[str, List[str]] = {}
     for record in root.findall("DescriptorRecord"):
-        ui = _child_text(record, "DescriptorUI")
-        if not ui:
-            raise MeshParseError("DescriptorRecord without a non-empty DescriptorUI")
-        if ui in by_ui:
-            raise MeshParseError(f"duplicate DescriptorUI: {ui!r}")
-        name = _child_text(record, "DescriptorName/String")
-        trees: List[str] = []
-        for tn_element in record.findall("TreeNumberList/TreeNumber"):
-            tree_number = (tn_element.text or "").strip()
-            if not tree_number or any(seg == "" for seg in tree_number.split(".")):
-                raise MeshParseError(f"malformed TreeNumber {tree_number!r} for {ui!r}")
-            if tree_number in trees:
-                raise MeshParseError(
-                    f"duplicate TreeNumber {tree_number!r} within {ui!r}"
-                )
-            if tree_number in ui_by_tree:
-                raise MeshParseError(
-                    f"tree number {tree_number!r} claimed by both "
-                    f"{ui_by_tree[tree_number]!r} and {ui!r}"
-                )
-            trees.append(tree_number)
-            ui_by_tree[tree_number] = ui
-        by_ui[ui] = Descriptor(ui=ui, name=name, tree_numbers=tuple(sorted(trees)))
-    return MeshTree(_by_ui=by_ui, _ui_by_tree=ui_by_tree)
+        _ingest_record(record, by_ui, owners)
+    return MeshTree(_by_ui=by_ui, _owners_by_tree=_finalize_owners(owners))
+
+
+def parse_descriptor_file(path: str) -> MeshTree:
+    """Stream-parse a MeSH ``DescriptorRecordSet`` file into a :class:`MeshTree`.
+
+    Uses ``ET.iterparse`` and clears each record after ingesting it, so memory stays
+    bounded (tens of MB) even for the full production release. Same per-record
+    validation and same resulting :class:`MeshTree` as :func:`parse_descriptor_xml`.
+    Raises :class:`MeshParseError` on invalid XML, a wrong/absent root element, or any
+    per-record inconsistency.
+    """
+    by_ui: Dict[str, Descriptor] = {}
+    owners: Dict[str, List[str]] = {}
+    root_seen = False
+    try:
+        for event, elem in ET.iterparse(path, events=("start", "end")):
+            if event == "start":
+                if not root_seen:
+                    if elem.tag != "DescriptorRecordSet":
+                        raise MeshParseError(
+                            f"root element must be DescriptorRecordSet, got {elem.tag!r}"
+                        )
+                    root_seen = True
+                continue
+            if elem.tag == "DescriptorRecord":
+                _ingest_record(elem, by_ui, owners)
+                elem.clear()
+    except ET.ParseError as exc:
+        raise MeshParseError(f"invalid MeSH XML: {exc}") from exc
+    if not root_seen:
+        raise MeshParseError("no DescriptorRecordSet root element found")
+    return MeshTree(_by_ui=by_ui, _owners_by_tree=_finalize_owners(owners))
 
 
 #: The single, frozen neighbourhood radius for V2-A peer selection (§2.2). It is a
@@ -179,34 +239,31 @@ ONE_PARENT_UP = "ONE_PARENT_UP"
 def select_one_parent_up(tree: MeshTree, endpoint_ui: str) -> Tuple[str, ...]:
     """Deterministic one-parent-up branch peers for an endpoint (Decision-1, §2.2).
 
-    For every tree position of the endpoint: go exactly one parent up, take every
-    descriptor anywhere under that parent (sibling *subgraphs*, not only immediate
-    siblings), then exclude the endpoint itself and its entire descendant subtree.
-    The results are unioned across all of the endpoint's positions (full
-    polyhierarchy) and deduplicated by stable ``DescriptorUI``. The rule never
-    ascends to a grandparent, and the parent descriptor itself is never a peer
-    (it is not *under* itself).
+    For every tree position of the endpoint: go exactly one parent up and take every
+    descriptor owning any tree number under that parent (sibling *subgraphs*, not only
+    immediate siblings), unioned across all of the endpoint's positions (full
+    polyhierarchy) and deduplicated by stable ``DescriptorUI``. The rule never ascends
+    to a grandparent, and the parent descriptor itself is never a peer.
 
-    Fail-closed: returns an empty tuple when no eligible branch peers exist (e.g.
-    the endpoint has no siblings, or sits at a top-level number with no parent).
-    An empty result means "not assessable against this ontology", to be surfaced
-    by the caller as coverage — never silently treated as "no risk". Raises
-    ``KeyError`` if ``endpoint_ui`` is not in ``tree``.
+    **Conservative exclusion for shared positions.** Excluded from peers is *every*
+    descriptor that owns any tree number equal to, or descending from, any of the
+    endpoint's tree positions — not just the endpoint itself. So if the endpoint ever
+    shares a tree position with another descriptor, that other descriptor is also
+    excluded: the same place in the ontology is never counted as a peer.
 
-    Returns the peer ``DescriptorUI``s sorted, so the output is independent of
-    record order in the source fragment.
+    Fail-closed: returns an empty tuple when no eligible branch peers exist (no
+    siblings, or a top-level position with no parent). An empty result means "not
+    assessable against this ontology", surfaced by the caller as coverage — never
+    silently "no risk". Raises ``KeyError`` if ``endpoint_ui`` is not in ``tree``.
+    Output is sorted, hence independent of source record order.
     """
     endpoint = tree.descriptor(endpoint_ui)
 
-    # Descriptors to exclude: the endpoint and every descriptor in its descendant
-    # subtree, taken across all of the endpoint's tree positions (identity-based,
-    # so a polyhierarchic descendant is excluded wherever it appears).
-    excluded_uis = {endpoint_ui}
+    excluded_uis: set[str] = {endpoint_ui}
     for position in endpoint.tree_numbers:
+        excluded_uis.update(tree.owners_at(position))
         for tree_number in tree.descendant_tree_numbers(position):
-            descendant_ui = tree.ui_at(tree_number)
-            if descendant_ui is not None:
-                excluded_uis.add(descendant_ui)
+            excluded_uis.update(tree.owners_at(tree_number))
 
     peer_uis: set[str] = set()
     for position in endpoint.tree_numbers:
@@ -214,10 +271,9 @@ def select_one_parent_up(tree: MeshTree, endpoint_ui: str) -> Tuple[str, ...]:
         if parent is None:
             continue  # top-level position: no parent to branch from
         for tree_number in tree.descendant_tree_numbers(parent):
-            peer_ui = tree.ui_at(tree_number)
-            if peer_ui is None or peer_ui in excluded_uis:
-                continue
-            peer_uis.add(peer_ui)
+            for owner in tree.owners_at(tree_number):
+                if owner not in excluded_uis:
+                    peer_uis.add(owner)
     return tuple(sorted(peer_uis))
 
 
@@ -236,16 +292,15 @@ def resolve_peerset(
 
     ``ontology_ids`` are the DescriptorUIs returned by :func:`select_one_parent_up`.
     ``has_profile(peer_ui)`` reports whether that peer has a usable V1 literature
-    profile. Peers WITH a profile go to ``profiled_ids`` and enter the rank
-    denominator; peers WITHOUT one go to ``missing_ids`` and are NEVER scored as
-    artificial zeros (see the :class:`PeerSet` contract and the S3 rank gate). Input
-    order is preserved, so the partition is deterministic. The predicate is called
-    exactly once per peer.
+    profile. Peers WITH a profile go to ``profiled_ids`` and enter the rank denominator;
+    peers WITHOUT one go to ``missing_ids`` and are NEVER scored as artificial zeros
+    (see the :class:`PeerSet` contract and the S3 rank gate). Input order is preserved,
+    so the partition is deterministic. The predicate is called exactly once per peer.
 
-    Pure glue: it calls no scorer and mutates no verdict. It builds a
-    :class:`PeerSet`, whose invariants (endpoint excluded, deduplicated, disjoint,
-    partitioning) are enforced on construction — so a malformed selection fails
-    closed here rather than reaching the gate.
+    Pure glue: it calls no scorer and mutates no verdict. It builds a :class:`PeerSet`,
+    whose invariants (endpoint excluded, deduplicated, disjoint, partitioning) are
+    enforced on construction — so a malformed selection fails closed here rather than
+    reaching the gate.
     """
     profiled: List[str] = []
     missing: List[str] = []
