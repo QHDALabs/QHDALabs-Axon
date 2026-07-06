@@ -481,6 +481,48 @@ pre-registration is committed or frozen; no confirmatory run before that commit.
 
 ---
 
+### [2026-07-06] CONFIRMATORY Tier 0 — V2-A pair-selectivity: FAIL at contract cell `thin_half_n4` (method failure, honest null)
+
+**This is a confirmatory result, not a development pilot.** Executed once from the frozen
+operational pre-registration (line A, docs=20). Every world seed derives solely from the
+pre-registration commit SHA `8ef6057e5a2bcef67a0bcfb5b3d68c4927d6d551` per §6.4. Runner:
+`scripts/confirmatory_v2a_tier0.py`, frozen before the run; real V1; R=200. `bridge.py`
+unchanged (blob `1969f43d8fb172f40bc4c878d519f406ac7499f2`). This supersedes the "still
+open / no confirmatory run" status of the earlier same-day engineering entry.
+
+**Verdict: Tier 0 FAIL.** Logged exactly as produced — no tuning, no reclassification, no
+Tier 1. Frozen §7 criteria (inclusive):
+
+```text
+S1 monotonicity      PASS   0 within-replicate reversals across all 11 cells
+S1 width=0 power     PASS   base 0.00/0.00, strong 0.00/0.00, thin 0.035/0.010  (<= 0.10)
+S1 full-width deg    FAIL   thin_half_n4 = 0.53 < 0.80   <-- CONTRACT cell, binds the verdict
+                            others PASS: base .985, strong .99, thin 1.00, thin_double .975,
+                            thin_halfcorp .905, thin_noise4 .985, probe_20_1_2 .96
+                            characterization probes below theta (do NOT bind):
+                            probe_20_h_2 .74, probe_20_h_4 .64, probe_25_h_4 .57
+S2 latent parent     PASS   risk_rate_a 0.950, risk_rate_c 0.955  (>= 0.90)
+```
+
+**Interpretation — METHOD FAILURE (§13), not an implementation defect.** The code conformed
+to the frozen specification (the monotone-by-construction invariant held under the
+confirmatory seeds; every non-contract cell behaved as expected); a frozen PASS criterion
+failed on the pre-designated contract cell. The mediated-connectivity statistic does not
+degrade a thin-M × half-corpus × high-noise broad mechanism to the pre-registered 0.80
+threshold — the same low-power boundary recorded held-out for migraine/magnesium (OP1).
+This is an honest null: a rigorously obtained negative result, first-class.
+
+**Decision (binding, per the pre-registration STOP rule).** STOP. No Tier 1. The mechanism,
+thresholds, contract-cell classification, and seeds are NOT changed. V2-A does **not** pass
+Tier 0 and therefore is not granted even `EXPERIMENTAL_TIER0_ONLY`; it stays shadow/audit-only.
+Any redesign of the statistic to reach the thin corner is a NEW card with a NEW
+pre-registration — it may not reuse this SHA or these seeds.
+
+**Provenance / evidence.** `pre_registration_sha = 8ef6057…`; R=200; full confirmatory
+artifact committed as `v2a_confirmatory.json` (re-encoded UTF-8) for the audit trail.
+
+---
+
 ### [YYYY-MM-DD] Hypothesis: <first scientific hypothesis>
 
 **Question:**
