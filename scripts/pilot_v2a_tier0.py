@@ -11,6 +11,7 @@ import argparse
 import json
 from collections import defaultdict
 from dataclasses import replace
+from typing import Sequence
 
 from axon.relational_representation.literature_store import LiteratureStore
 from axon.types import Document
@@ -39,18 +40,22 @@ def _store(world: SyntheticWorld, width: int, mode: SpreadMode) -> LiteratureSto
     return LiteratureStore(documents, background_labels=world.background_labels)
 
 
-def run_width_sweep(config: PilotConfig) -> dict[str, object]:
-    """Width sweep over all SpreadModes on DEV_WIDTH_SEEDS.
+def run_width_sweep(
+    config: PilotConfig, seeds: Sequence[int] = DEV_WIDTH_SEEDS
+) -> dict[str, object]:
+    """Width sweep over all SpreadModes on the given seeds (default DEV_WIDTH_SEEDS).
 
     Returns the per-(mode, width) curves and any within-replicate monotonicity
-    reversals. Does NOT run the latent-parent pass (see run_latent_parent)."""
+    reversals. Does NOT run the latent-parent pass (see run_latent_parent). Only the
+    seed SOURCE is parameterised — the scoring mechanism is unchanged — so the
+    confirmatory runner can supply pre-registration-derived seeds (§6.4)."""
     widths = tuple(range(config.n_peers + 1))
     modes = (SpreadMode.A_ONLY, SpreadMode.C_ONLY, SpreadMode.SYMMETRIC)
     risk_counts: defaultdict[tuple[str, int, str], int] = defaultdict(int)
     aggregate_counts: defaultdict[tuple[str, int], int] = defaultdict(int)
     monotonicity_violations: list[dict[str, object]] = []
 
-    for seed in DEV_WIDTH_SEEDS:
+    for seed in seeds:
         world = build_world(seed, config)
         for mode in modes:
             previous = (False, False)
@@ -64,7 +69,7 @@ def run_width_sweep(config: PilotConfig) -> dict[str, object]:
                     peers_a,
                     peers_c,
                     frozen_v1_scorer(store),
-                    provenance={"development_seed": seed, "mode": mode.value, "width": width},
+                    provenance={"seed": seed, "mode": mode.value, "width": width},
                 )
                 current = (
                     assessment.side_a.status.value == "pair_selectivity_not_demonstrated",
@@ -87,22 +92,24 @@ def run_width_sweep(config: PilotConfig) -> dict[str, object]:
                 {
                     "mode": mode.value,
                     "width": width,
-                    "risk_rate_a": risk_counts[(mode.value, width, "a")] / len(DEV_WIDTH_SEEDS),
-                    "risk_rate_c": risk_counts[(mode.value, width, "c")] / len(DEV_WIDTH_SEEDS),
-                    "degradation_rate": aggregate_counts[(mode.value, width)] / len(DEV_WIDTH_SEEDS),
+                    "risk_rate_a": risk_counts[(mode.value, width, "a")] / len(seeds),
+                    "risk_rate_c": risk_counts[(mode.value, width, "c")] / len(seeds),
+                    "degradation_rate": aggregate_counts[(mode.value, width)] / len(seeds),
                 }
             )
     return {"curves": curves, "monotonicity_violations": monotonicity_violations}
 
 
-def run_latent_parent(config: PilotConfig) -> dict[str, float]:
-    """Latent-parent pass (mechanism absent) over DEV_LATENT_PARENT_SEEDS.
-
-    Computed once per grid; independent of the width sweep."""
+def run_latent_parent(
+    config: PilotConfig, seeds: Sequence[int] = DEV_LATENT_PARENT_SEEDS
+) -> dict[str, float]:
+    """Latent-parent pass (mechanism absent) over the given seeds
+    (default DEV_LATENT_PARENT_SEEDS). Computed once per grid; independent of the
+    width sweep. Only the seed source is parameterised; the mechanism is unchanged."""
     latent_risk_a = 0
     latent_risk_c = 0
     latent_config = replace(config, mechanism_rate=0.0)
-    for seed in DEV_LATENT_PARENT_SEEDS:
+    for seed in seeds:
         world = build_world(seed, latent_config, latent_parent=True)
         store = _store(world, 0, SpreadMode.SYMMETRIC)
         assessment = assess_pair_selectivity(
@@ -111,7 +118,7 @@ def run_latent_parent(config: PilotConfig) -> dict[str, float]:
             PeerSet("endpoint_a", world.peers_a, world.peers_a),
             PeerSet("endpoint_c", world.peers_c, world.peers_c),
             frozen_v1_scorer(store),
-            provenance={"development_seed": seed, "scenario": "latent_parent"},
+            provenance={"seed": seed, "scenario": "latent_parent"},
         )
         latent_risk_a += int(
             assessment.side_a.status.value == "pair_selectivity_not_demonstrated"
@@ -120,8 +127,8 @@ def run_latent_parent(config: PilotConfig) -> dict[str, float]:
             assessment.side_c.status.value == "pair_selectivity_not_demonstrated"
         )
     return {
-        "risk_rate_a": latent_risk_a / len(DEV_LATENT_PARENT_SEEDS),
-        "risk_rate_c": latent_risk_c / len(DEV_LATENT_PARENT_SEEDS),
+        "risk_rate_a": latent_risk_a / len(seeds),
+        "risk_rate_c": latent_risk_c / len(seeds),
     }
 
 
