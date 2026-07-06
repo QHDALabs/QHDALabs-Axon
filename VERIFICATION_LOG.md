@@ -429,6 +429,56 @@ question all remain unresolved. No V2-A Tier 0 pre-registration is committed or 
 `ABC_BRIDGE_V2A_TIER0_PRE_REGISTRATION.md` is still an uncommitted draft. `bridge.py`
 unchanged (blob `1969f43d8fb172f40bc4c878d519f406ac7499f2`).
 
+> *Editorial note [2026-07-06]:* the draft named above was later renamed to
+> `docs/ABC_BRIDGE_V2A_TIER0_PROPOSED_UNPILOTED_DESIGN.md` and relabelled
+> PROPOSED / UNPILOTED / NOT FROZEN — a reference design, not the operational
+> pre-registration; the MeSH 2026 artifact URL + SHA are now present and verified.
+> See the [2026-07-06] entry below. History preserved: the line above is left as
+> written on 2026-06-29.
+
+---
+
+### [2026-07-06] Session: V2-A Decision-1 peer selection — built and validated on real MeSH 2026 (engineering, no scientific claim)
+
+Engineering entry. No scientific hypothesis is tested and no metric is claimed. V2-A stays
+shadow/audit-only; this is **not** a Tier 0 pass. `bridge.py` unchanged (blob
+`1969f43d8fb172f40bc4c878d519f406ac7499f2`).
+
+**Built (merged to main).** The deterministic half of V2-A peer selection (Decision-1) in
+`verification/peer_selection.py`: MeSH descriptor parser, one-parent-up branch-peer
+selection (§2.2), and profile→`PeerSet` resolution — with Layer 1 determinism tests and a
+Layer 3 wiring test (design §5). Selection logic is pure/offline and unit-tested on
+committed fixtures; the V1 bridge and the selectivity gate are untouched.
+
+**Two things the real artifact surfaced that fixtures could not** (validator run against the
+frozen MeSH 2026 descriptor file `desc2026.xml`, sha256 `9b034cad…cc5ba`, 31110 descriptors):
+
+1. **Scale.** `ET.fromstring` on the ~300 MB release does not scale (memory/time). Added a
+   streaming `parse_descriptor_file` (`iterparse` + `clear`): full parse ~33 s, peak RSS
+   ~23 MB, identical `MeshTree` to the in-memory parser.
+2. **Shared tree positions are real.** A MeSH tree number can be owned by more than one
+   descriptor — exactly 3 cases in MeSH 2026, all `D047991`/`D048013` in the B03 (Bacteria)
+   branch. The uniqueness invariant was too strict (it aborted the whole parse). The model
+   now maps a tree number to a *tuple* of owner UIs, surfaces collisions, and makes endpoint
+   exclusion **conservative** (any descriptor sharing an endpoint position or subtree
+   position is excluded from peers). Governance decision, recorded: tuple owners — not hard
+   fail, not first-owner-wins, not exclusion of the colliding descriptors.
+
+**Coverage boundary (not an alarm, not a failure).** One-parent-up on Raynaud disease
+(`D011928`): 3 tree positions, **11** branch peers. With `alpha_rank_nominal = 0.05` the
+derived minimum is `n_min = ceil(1/alpha) - 1 = 19`, so Raynaud-side selectivity is
+**UNASSESSABLE at the ontology level** before profile availability is even considered. This
+is the intended fail-closed coverage behavior, but it is a real scope boundary of V2-A at
+`ONE_PARENT_UP`: endpoints with small ontology neighborhoods get no rank-selectivity verdict
+at this alpha/radius. `UNASSESSABLE` is therefore not a rare abstraction — it can apply to
+canonical LBD cases (Raynaud among them). Recorded before confirmatory, deliberately.
+
+**Status.** MeSH 2026 artifact URL + SHA now present and verified (`desc2026.sha256`; `.xml`
+gitignored). A cold-review package (line A, docs=20) drafts proposed §6/§7 from the validated
+dev pilot. Still open (governance, unfrozen): numeric PASS criteria (incl. the θ_full /
+`thin_half_n4` decision), R, the RNG/seed instantiation, cold-review sign-off. No V2-A Tier 0
+pre-registration is committed or frozen; no confirmatory run before that commit.
+
 ---
 
 ### [YYYY-MM-DD] Hypothesis: <first scientific hypothesis>

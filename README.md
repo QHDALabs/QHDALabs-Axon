@@ -257,19 +257,24 @@ python scripts/pilot_v2a_grid.py   # development calibration; output is NOT conf
 
 See [VERIFICATION_LOG.md](VERIFICATION_LOG.md) for the development-pilot outcome.
 
-The deterministic half of the audit's **peer selection (Decision-1)** is now
-scaffolded and unit-tested, independent of any confirmatory run.
-`verification/peer_selection.py` parses a MeSH descriptor fragment into an immutable
-ontology, selects **one-parent-up branch peers** for an endpoint (sibling subgraphs,
-polyhierarchy union, endpoint and its subtree excluded, dedup by `DescriptorUI`,
-fail-closed when no peers exist), and resolves those peers into a gate-ready
-`PeerSet` by profile availability (missing peers never become artificial zeros). It
-is **pure and offline** — it runs on small committed MeSH fixtures, not a production
-release — with Layer 1 determinism tests and one Layer 3 wiring test (design §5). This
-is scaffolding only: it is **still shadow / audit-only and still not a Tier 0 pass**.
-The frozen production MeSH artifact and its SHA, the numeric PASS criteria (§6/§7), the
+The deterministic half of the audit's **peer selection (Decision-1)** is built and
+unit-tested, independent of any confirmatory run. `verification/peer_selection.py`
+parses a MeSH descriptor source into an immutable ontology — from a small fragment or,
+memory-bounded, streamed from the full production release (`parse_descriptor_file`) —
+selects **one-parent-up branch peers** for an endpoint (sibling subgraphs, polyhierarchy
+union, endpoint and its subtree excluded, dedup by `DescriptorUI`, fail-closed when no
+peers exist), and resolves those peers into a gate-ready `PeerSet` by profile
+availability (missing peers never become artificial zeros). Tree positions genuinely
+shared by more than one descriptor — a real MeSH condition — are modelled faithfully: a
+tree number maps to a *tuple* of owner UIs, and endpoint exclusion is conservative.
+Beyond the committed fixtures (Layer 1 determinism + one Layer 3 wiring test, design §5),
+it is **validated against the frozen MeSH 2026 descriptor artifact** (sha-checked, 31110
+descriptors, 3 known shared-position collisions, one-parent-up selection runs). It remains
+**shadow / audit-only and not a Tier 0 pass**: the numeric PASS criteria (§6/§7), the
 confirmatory seed derivation, and cold review all remain open before any confirmatory
-Tier 0 run.
+Tier 0 run. (A validation-surfaced scope note — endpoints with small ontology
+neighborhoods, e.g. Raynaud's 11 peers < the n_min of 19, are `UNASSESSABLE` by design —
+is recorded in VERIFICATION_LOG.)
 
 ## Tests
 
