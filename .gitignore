@@ -8,3 +8,10 @@ dist/
 *.egg
 .venv/
 venv/
+
+# Large / local artifacts — must never be pushed.
+# desc2026.xml is the ~300 MB frozen MeSH source (its integrity lives in the tracked
+# desc2026.sha256, which stays committed as the provenance record).
+/desc2026.xml
+# v2a_dev_grid.json is a local real-V1 development-pilot artifact (not confirmatory).
+/v2a_dev_grid.json
