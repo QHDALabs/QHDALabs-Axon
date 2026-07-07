@@ -1,11 +1,12 @@
 # OP2 — Sibling-vs-Bridge Separation — New Card (DRAFT scaffold)
 
-> **STATUS: DRAFT SCAFFOLD — NEW CARD. MECHANISM NOT YET SPECIFIED. NOT FROZEN. NOT A
-> PRE-REGISTRATION.** This document frames the problem and the hard boundaries only. The
-> separation *mechanism* (§3) and every *numeric criterion* (§6) are design decisions to be
-> written by the governance owner; they are left as explicit `TBD` slots here. Nothing in
-> this file may seed anything, and this file's commit SHA is **not** a seed root.
-> `bridge.py` stays blob `1969f43d8fb172f40bc4c878d519f406ac7499f2` (held-out V1).
+> **STATUS: DRAFT — C1-ONLY Tier 0. NOT FROZEN. NOT YET A PRE-REGISTRATION.** Mechanism
+> approved (§3, 2026-07-06): **Component 1** (MeSH endpoint-neighborhood hard gate) is the
+> Tier 0 core — a **deterministic safety invariant**, not a statistical experiment.
+> **Component 2** stays `PROPOSED_NOT_FROZEN` (no numbers, no commitment, out of this
+> freeze). Because C1 is deterministic there is **no generator, no seeds, no R, no
+> statistical thresholds** — see §5–§7. `bridge.py` stays blob
+> `1969f43d8fb172f40bc4c878d519f406ac7499f2` (held-out V1); no Qiskit in this card.
 
 Scaffolded after the V2-A Tier 0 confirmatory FAIL (2026-07-06, method failure at
 `thin_half_n4`). V2-A addressed **pair selectivity / power**; it did not pass Tier 0 and
@@ -52,7 +53,7 @@ In open discovery, every clinical sibling would generate a spurious "bridge".
   ontology layer; it imports no quantum layer. Any quantum approach is a separate, later
   card (e.g. `V2-C / QWALK_RELATIONAL_TOPOLOGY`), after OP2.
 
-## §2. Claim / construct — PROPOSED (confirm before freeze)
+## §2. Claim / construct — CONFIRMED (governance 2026-07-06)
 
 > **The MeSH Sibling-Substitution Safety Audit estimates SIBLING-CONFOUNDING RISK for a
 > candidate A–C bridge, relative to the frozen MeSH release.** It asks one question: is the
@@ -63,7 +64,7 @@ In open discovery, every clinical sibling would generate a spurious "bridge".
 
 It does **not** detect true bridges, mediation, or mechanism; it only flags the specific
 failure mode OP2 named — a sibling scored as a bridge (cluster_headache ↔ migraine).
-`Confirm (governance):` this construct and its one-sided direction.
+`Confirmed (governance, 2026-07-06):` this construct and its one-sided direction.
 
 ## §3. Mechanism — MeSH Sibling-Substitution Safety Audit (governance-approved 2026-07-06)
 
@@ -72,7 +73,7 @@ V1 `propose_bridge` scored fresh per pair. It does **not** edit `bridge.py` and 
 Qiskit** — this card is a pure, auditable safety gate (§1).
 
 ### Component 1 — MeSH endpoint-neighborhood hard gate
-**Status: Tier 0 core / binding candidate.**
+**Status: `TIER0_CORE_CANDIDATE` — the OP2 Tier 0 core, deterministic (see §5–§7).**
 
 ```text
 If C ∈ select_one_parent_up(A)  OR  A ∈ select_one_parent_up(C):
@@ -86,7 +87,8 @@ catches the motivating case (`cluster_headache` adjacent to `migraine`) that
 `direct_max=0.30` missed. Deterministic; testable on frozen MeSH fragments.
 
 ### Component 2 — sibling-substitution specificity audit
-**Status: PROPOSED / statistical layer / §6 TBD — NOT a frozen PASS/FAIL without §6.**
+**Status: `PROPOSED_NOT_FROZEN` — future statistical layer; NOT in this Tier 0, no numbers,
+no commitment.**
 
 ```text
 Run frozen V1 on sibling substitutions:
@@ -102,11 +104,12 @@ statistical extension only; it is **not** frozen as PASS/FAIL until §6 is desig
 
 ### Decision record (governance, 2026-07-06)
 ```text
-YES  Component 1 as the hard OP2 core (binding candidate).
-YES  Component 2 as a proposed statistical extension.
-NO   Component 2 is NOT a frozen PASS/FAIL without §6.
-NO   no changes to bridge.py.
-NO   no Qiskit in this card (Qiskit is a later, separate card, e.g. V2-C / QWALK_RELATIONAL_TOPOLOGY).
+SCOPE  OP2 Tier 0 = C1 ONLY (a deterministic MeSH-adjacency safety invariant).
+YES    Component 1 is sufficient for this narrow Tier 0.
+NO     Component 2 does NOT enter this freeze — PROPOSED_NOT_FROZEN, no numbers.
+NO     do not mix the deterministic gate with an unsettled statistic.
+NO     no changes to bridge.py.
+NO     no Qiskit in this card (Qiskit is a later, separate card, e.g. V2-C / QWALK_RELATIONAL_TOPOLOGY).
 ```
 
 Kept distinct from V2-A on purpose: V2-A tested pair-SELECTIVITY of mediation (power) and
@@ -117,61 +120,88 @@ distinct construct, distinct verdict, new pre-registration, new seeds.
 the OP2 pre-registration commit). Component 2 only after §6 (coverage, comparable-or-higher
 fraction, threshold, `UNASSESSABLE`) is designed.
 
-## §4. Identifiability limits — `TBD` (adapt V2-A's L1–L4)
+## §4. Limits (structural gate — not statistical)
 
-Restate, for this construct, what is NOT identifiable on the term-profile substrate (e.g.
-a sibling and a broad-mechanism bridge may be observationally close). Carry the
-`modern-ontology-assisted` caveat if MeSH is the reference structure. `TBD (governance)`.
+- **L1 — modern-ontology-assisted.** Every verdict is relative to the frozen MeSH release;
+  adjacency is whatever that release encodes. This is a scope limitation of the claim.
+- **L2 — adjacency, not all confounding.** C1 flags one specific, structural failure mode:
+  an endpoint inside the other's one-parent-up MeSH neighbourhood. It does not claim to
+  catch every sibling/confounder — only ontology adjacency. One-sided:
+  `UNSAFE_NEIGHBORHOOD_ADJACENCY` removes trust; `NO_ADJACENCY` adds none.
+- **L3 — hierarchy is out of scope.** Parent–child (an endpoint in the other's descendant
+  subtree) is deliberately NOT flagged: `select_one_parent_up` excludes the endpoint's
+  subtree, so C1 targets siblings/neighbours, not ancestors/descendants. A known, intended
+  boundary, not a defect.
+- **L4 — coverage.** An endpoint absent from the frozen MeSH fails loud (`KeyError`); an
+  endpoint with no branch peers simply yields `NO_ADJACENCY`. A dedicated `UNASSESSABLE`
+  coverage state belongs to the future statistical layer (C2/§6), not to C1.
 
-## §5. Tier 0 design — scenarios that actually test sibling separation
+## §5. Tier 0 design — C1-only: a deterministic safety invariant (not an experiment)
 
-The generator must produce the case the single cutoff fails on: a **same-class sibling**
-pair (high direct_sim, NOT a bridge) vs a **distinct-but-bridged** pair (low direct_sim,
-real M). The motivating real case is migraine↔cluster_headache (sibling) vs
-migraine↔magnesium (bridge). Layers mirror V2-A:
-
-```text
-Layer 0  arithmetic fixtures for the separator
-Layer 1  determinism on frozen real-MeSH fragments (sibling subgraph membership)
-Layer 2  emergent generator: sibling pairs must be flagged; genuine bridges must NOT be
-Layer 3  one wiring test (real MeSH fragment -> separator -> verdict over synthetic profiles)
-```
-
-Generator scenarios and their frozen expectations: `TBD (governance)`.
-
-## §6. Nulls / PASS / FAIL / STOP — `TBD` (numeric, governance)
-
-Every threshold and the verdict binding are `TBD`, to be derived from a development pilot
-and frozen before confirmatory (as with V2-A §7/§9). The STOP rules carry over verbatim:
-implementation defect → fix+rerun; method failure → STOP, no Tier 1, no tuning.
-
-## §7. Seed derivation (discipline carried over; SHA is THIS card's, not V2-A's)
+C1 is deterministic, so OP2 Tier 0 is **not** a statistical experiment: no generator, no
+replicates, no distribution. Tier 0 = a frozen, auditable invariant checked by the unit
+tests already merged (`tests/verification/test_sibling_safety.py`) on frozen MeSH
+fragments. The invariant, in words:
 
 ```text
-world_seed = int.from_bytes(
-    SHA256("<THIS_CARD_PREREG_SHA>|OP2|Tier0|<grid_cell_id>|<replicate_index>".encode()),
-    "big")[:8]      # namespace "OP2", NOT "V2A"; SHA is this card's pre-reg commit, never 8ef6057
+The MeSH endpoint-neighborhood hard gate must:
+  (a) return UNSAFE_NEIGHBORHOOD_ADJACENCY when either endpoint is in the other's
+      one-parent-up neighbourhood — including the frozen motivating fixture
+      migraine ~ cluster_headache;
+  (b) return NO_ADJACENCY for a genuinely distant pair — migraine ~ magnesium;
+  (c) fire the OR from either argument order;
+  (d) NOT flag parent ~ child (hierarchy is out of scope, L3);
+  (e) touch no V1 (bridge.py blob stays 1969f43d…) and import no Qiskit.
 ```
 
-`TBD:` R, RNG instantiation, the closed `grid_cell_id` set. Same rules as V2-A §6.4/§6.5.
+No Layer-2 generator and no Layer-3 stochastic wiring — those were V2-A's statistical
+apparatus and do not apply to a deterministic gate.
 
-## §8. What must be filled before this becomes a pre-registration
+## §6. PASS / FAIL / STOP — deterministic (almost empty by design)
+
+**No R, no RNG, no distribution, no statistical thresholds.** PASS is a conjunction of
+deterministic conditions, all already exercised by the merged tests:
 
 ```text
-[ ] §2  construct + declared reference structure (governance)
-[ ] §3  the separation mechanism (governance) -> then I implement + unit-test it
-[ ] §4  identifiability limits
-[ ] §5  generator scenarios + frozen expectations
-[ ] §6  numeric PASS/FAIL/STOP, contract-vs-characterization classification
-[ ] §7  R, RNG, grid_cell_id set, seed root = this card's future commit SHA
-[ ] cold-review sign-off (R1–R4), THEN commit as the operational pre-registration
+PASS iff ALL of:
+  - test_sibling_safety.py passes (adjacency caught; OR both orders; unrelated clear;
+    parent~child not flagged; unknown endpoint raises);
+  - the frozen fixture migraine ~ cluster_headache returns UNSAFE_NEIGHBORHOOD_ADJACENCY;
+  - migraine ~ magnesium returns NO_ADJACENCY;
+  - bridge.py blob == 1969f43d8fb172f40bc4c878d519f406ac7499f2 (V1 untouched);
+  - the module imports no Qiskit.
+FAIL = any of the above breaks.
+STOP = implementation defect -> fix + rerun the deterministic checks. There is no "method
+       failure" mode here: there is no statistic to fail.
 ```
 
-Until §2–§7 are filled and cold-reviewed, this remains a DRAFT scaffold, not a
-pre-registration. No mechanism code is written until §3 is specified (code freezes before
-data; but here, design precedes code).
+Being deterministic, this Tier 0 is reproducible on any machine — no seed, no multi-hour run.
+
+## §7. Seed derivation — N/A for C1
+
+C1 is deterministic: **no seeds, no confirmatory RNG run, no seed root.** The §6.4-style
+seed machinery does not apply. It would return only if Component 2 (the statistical layer)
+is ever pursued — and only under its OWN new pre-registration, whose commit SHA (never
+`8ef6057…`) would seed it. Nothing in THIS card is a seed root.
+
+## §8. What remains before this C1-only card becomes a pre-registration
+
+```text
+[x] §0–§2  problem, boundaries, construct (confirmed 2026-07-06)
+[x] §3     mechanism — Component 1 approved; C2 = PROPOSED_NOT_FROZEN, out of this freeze
+[x] C1     implemented + unit-tested (merged: sibling_safety.py, test_sibling_safety.py)
+[ ] §4–§7  fold this deterministic-Tier-0 revision into final form
+[ ] freeze the motivating fixture (migraine ~ cluster_headache) as a committed test asset,
+    ideally with REAL MeSH UIs/tree-numbers (current test uses synthetic ids)
+[ ] cold-review sign-off — lighter than V2-A (no numbers to review): check the invariant,
+    the frozen fixture, V1-untouched, no-Qiskit — THEN commit as the OP2 pre-registration
+```
+
+C1-only makes the remaining path short: no numeric grid, no seed derivation, no multi-hour
+run to design or execute. Design still precedes the freeze commit.
 
 ---
 
-*QHDALabs — OP2 sibling-separation card, DRAFT scaffold. Mechanism and criteria pending
-governance. Not frozen, not a pre-registration, not a seed root. V1/`bridge.py` untouched.*
+*QHDALabs — OP2 sibling-separation card. C1-only Tier 0: a deterministic MeSH-adjacency
+safety invariant. Component 2 is a future statistical layer (`PROPOSED_NOT_FROZEN`). Not
+frozen, not yet a pre-registration, not a seed root. V1/`bridge.py` untouched; no Qiskit.*
