@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Frozen real-MeSH fixture for the OP2 sibling-safety invariant.
+  Real DescriptorUIs and tree numbers from MeSH 2026 (desc2026.sha256:
+  9b034cad8bbd4d8d1ef43816d6fd78d33fada52eddff2a0b4455b1fca35cc5ba). Trimmed to the three
+  descriptors the invariant needs; intermediate nodes are unnecessary because the gate
+  works on tree-number prefixes.
+
+  Real structure under "Headache Disorders, Primary" (C10.228.140.546.399):
+      C10.228.140.546.399.750       Migraine Disorders   D008881
+      C10.228.140.546.399.937.500   Cluster Headache     D003027   (deeper, different sub-branch)
+      D01.*                         Magnesium            D008274   (different tree = distant)
+
+  ADJACENCY IS ONE-SIDED: cluster_headache ∈ one-parent-up(migraine) — it sits under
+  migraine's parent, in a sibling subgraph — but migraine ∉ one-parent-up(cluster_headache).
+  The gate's OR rule is what makes migraine ~ cluster_headache UNSAFE in both argument orders.
+-->
+<DescriptorRecordSet>
+  <DescriptorRecord>
+    <DescriptorUI>D008881</DescriptorUI>
+    <DescriptorName><String>Migraine Disorders</String></DescriptorName>
+    <TreeNumberList>
+      <TreeNumber>C10.228.140.546.399.750</TreeNumber>
+    </TreeNumberList>
+  </DescriptorRecord>
+  <DescriptorRecord>
+    <DescriptorUI>D003027</DescriptorUI>
+    <DescriptorName><String>Cluster Headache</String></DescriptorName>
+    <TreeNumberList>
+      <TreeNumber>C10.228.140.546.399.937.500</TreeNumber>
+    </TreeNumberList>
+  </DescriptorRecord>
+  <DescriptorRecord>
+    <DescriptorUI>D008274</DescriptorUI>
+    <DescriptorName><String>Magnesium</String></DescriptorName>
+    <TreeNumberList>
+      <TreeNumber>D01.268.552.437</TreeNumber>
+      <TreeNumber>D01.268.557.500</TreeNumber>
+      <TreeNumber>D01.552.547.500</TreeNumber>
+    </TreeNumberList>
+  </DescriptorRecord>
+</DescriptorRecordSet>
