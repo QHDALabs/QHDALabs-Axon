@@ -48,38 +48,74 @@ In open discovery, every clinical sibling would generate a spurious "bridge".
   `EXPERIMENTAL_TIER0_ONLY`; a real gate needs a separate Tier 1. This card does not
   authorize production gating.
 - **Honest scope.** No overclaiming; a Tier 0 FAIL is a first-class result logged as-is.
+- **No Qiskit in this card.** OP2 is a pure, auditable safety gate on the relational /
+  ontology layer; it imports no quantum layer. Any quantum approach is a separate, later
+  card (e.g. `V2-C / QWALK_RELATIONAL_TOPOLOGY`), after OP2.
 
-## §2. Claim / construct — `TBD` (frame here, values by governance)
+## §2. Claim / construct — PROPOSED (confirm before freeze)
 
-State precisely what the sibling separator **will** and **will not** do. Draft frame:
+> **The MeSH Sibling-Substitution Safety Audit estimates SIBLING-CONFOUNDING RISK for a
+> candidate A–C bridge, relative to the frozen MeSH release.** It asks one question: is the
+> apparent bridge an artifact of A and C being SAME-CLASS (sibling) literatures rather than
+> a specific, distinct A–C path? A positive result (`UNSAFE`) **removes** bridge confidence;
+> it never asserts a true bridge. One-sided and trust-removing, like V2-A — and, like V2-A,
+> every verdict is `modern-ontology-assisted` (relative to the declared MeSH release).**
+
+It does **not** detect true bridges, mediation, or mechanism; it only flags the specific
+failure mode OP2 named — a sibling scored as a bridge (cluster_headache ↔ migraine).
+`Confirm (governance):` this construct and its one-sided direction.
+
+## §3. Mechanism — MeSH Sibling-Substitution Safety Audit (governance-approved 2026-07-06)
+
+A NEW module around frozen V1; it reuses `select_one_parent_up` (Decision-1) and the frozen
+V1 `propose_bridge` scored fresh per pair. It does **not** edit `bridge.py` and uses **no
+Qiskit** — this card is a pure, auditable safety gate (§1).
+
+### Component 1 — MeSH endpoint-neighborhood hard gate
+**Status: Tier 0 core / binding candidate.**
 
 ```text
-The separator estimates whether an A–C pair is a SAME-CLASS sibling relation rather than a
-distinct-but-bridged one, relative to <a declared structure — TBD: MeSH? co-citation? both>.
-A positive result REMOVES bridge confidence (sibling risk); it never asserts a true bridge.
-It is one-sided and trust-removing, like V2-A.
+If C ∈ select_one_parent_up(A)  OR  A ∈ select_one_parent_up(C):
+    return UNSAFE_NEIGHBORHOOD_ADJACENCY
 ```
 
-`TBD (governance):` the exact construct, the declared reference structure, and the
-one-sided direction. Do not let the construct claim to "detect true bridges".
+The direct OP2 fix: **ontology structure overrides the weak cosine gate.** The rule is an
+`OR`, so it may fire one-sidedly (a descriptor's multi-tree MeSH positions can make the
+neighbourhood asymmetric) — hence `NEIGHBORHOOD_ADJACENCY`, not "mutual sibling". This
+catches the motivating case (`cluster_headache` adjacent to `migraine`) that
+`direct_max=0.30` missed. Deterministic; testable on frozen MeSH fragments.
 
-## §3. Mechanism — `TBD` (GOVERNANCE DESIGN DECISION — not scaffolded here)
-
-The log says the fix "likely needs more than one cosine cutoff." That is a *direction*, not
-a mechanism. This section is intentionally empty of specifics:
+### Component 2 — sibling-substitution specificity audit
+**Status: PROPOSED / statistical layer / §6 TBD — NOT a frozen PASS/FAIL without §6.**
 
 ```text
-TBD (governance): the sibling-vs-bridge separation statistic. Candidate directions to be
-chosen and specified by the owner, e.g.:
-  - a multi-feature separator (direct_sim + mediated + neighbourhood shape) instead of one cutoff;
-  - a structural test on the MeSH neighbourhood (is C inside A's sibling subgraph?);
-  - a rank/selectivity test against sibling substitutions (relate to, but distinct from, V2-A).
-Whatever is chosen: it is a NEW module around frozen V1; it reads V1 outputs; it does not
-edit bridge.py. Once specified, it is frozen before data.
+Run frozen V1 on sibling substitutions:
+    propose_bridge(A_sibling, C)
+    propose_bridge(A, C_sibling)
+If the substituted pairs reproduce comparable-or-higher bridge evidence:
+    return UNSAFE_NON_SPECIFIC_SIGNAL
 ```
 
-I (engineer) will **not** invent this. Once you specify the mechanism, I implement it as a
-new, unit-tested module and scaffold its Tier 0 exactly as we did for V2-A.
+`§6 TBD (governance):` the "comparable-or-higher" statistic, its threshold, the coverage /
+`UNASSESSABLE` rule, and whether Component 2 binds Tier 0 at all. Component 2 is a proposed
+statistical extension only; it is **not** frozen as PASS/FAIL until §6 is designed.
+
+### Decision record (governance, 2026-07-06)
+```text
+YES  Component 1 as the hard OP2 core (binding candidate).
+YES  Component 2 as a proposed statistical extension.
+NO   Component 2 is NOT a frozen PASS/FAIL without §6.
+NO   no changes to bridge.py.
+NO   no Qiskit in this card (Qiskit is a later, separate card, e.g. V2-C / QWALK_RELATIONAL_TOPOLOGY).
+```
+
+Kept distinct from V2-A on purpose: V2-A tested pair-SELECTIVITY of mediation (power) and
+failed Tier 0 on thin mediation; this OP2 audit is a SAFETY gate on ontology adjacency —
+distinct construct, distinct verdict, new pre-registration, new seeds.
+
+**Build order:** Component 1 first (module + tests, as a development module frozen later at
+the OP2 pre-registration commit). Component 2 only after §6 (coverage, comparable-or-higher
+fraction, threshold, `UNASSESSABLE`) is designed.
 
 ## §4. Identifiability limits — `TBD` (adapt V2-A's L1–L4)
 
