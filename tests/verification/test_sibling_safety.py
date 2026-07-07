@@ -1,10 +1,19 @@
+from pathlib import Path
+
 import pytest
 
-from axon.verification.peer_selection import parse_descriptor_xml
+from axon.verification.peer_selection import parse_descriptor_xml, select_one_parent_up
 from axon.verification.sibling_safety import (
     NeighborhoodVerdict,
     endpoint_neighborhood_gate,
 )
+
+_FIXTURE = Path(__file__).resolve().parent.parent / "fixtures" / "mesh" / "op2_headache_fixture.xml"
+MIGRAINE, CLUSTER_HEADACHE, MAGNESIUM = "D008881", "D003027", "D008274"
+
+
+def _real_mesh_tree():
+    return parse_descriptor_xml(_FIXTURE.read_text(encoding="utf-8"))
 
 
 def _rec(ui, *tree_numbers):
@@ -54,17 +63,27 @@ def test_unrelated_endpoints_are_not_adjacent():
     assert endpoint_neighborhood_gate(tree, "A", "C") is CLEAR
 
 
-def test_motivating_case_migraine_cluster_headache_vs_magnesium():
-    # Headache class: migraine and cluster_headache are one-parent-up neighbours (OP2).
-    # Magnesium sits in a different branch (a genuine distant endpoint).
-    tree = _tree(
-        _rec("HEADACHE", "C10.228.140.546"),
-        _rec("MIGRAINE", "C10.228.140.546.399"),
-        _rec("CLUSTER_HEADACHE", "C10.228.140.546.221"),
-        _rec("MAGNESIUM", "D01.029.500"),
-    )
-    assert endpoint_neighborhood_gate(tree, "MIGRAINE", "CLUSTER_HEADACHE") is UNSAFE
-    assert endpoint_neighborhood_gate(tree, "MIGRAINE", "MAGNESIUM") is CLEAR
+def test_real_mesh_migraine_cluster_headache_is_unsafe_both_orders():
+    # The frozen OP2 motivating case on REAL MeSH 2026 UIs/tree-numbers: cluster headache is
+    # in migraine's one-parent-up neighbourhood, so the pair is UNSAFE — ontology structure
+    # catches what direct_max=0.30 missed. UNSAFE in either argument order.
+    tree = _real_mesh_tree()
+    assert endpoint_neighborhood_gate(tree, MIGRAINE, CLUSTER_HEADACHE) is UNSAFE
+    assert endpoint_neighborhood_gate(tree, CLUSTER_HEADACHE, MIGRAINE) is UNSAFE
+
+
+def test_real_mesh_migraine_magnesium_is_not_adjacent():
+    # The genuine distant endpoint (a chemical in D01, not a disease in C10) is not adjacent.
+    assert endpoint_neighborhood_gate(_real_mesh_tree(), MIGRAINE, MAGNESIUM) is CLEAR
+
+
+def test_real_mesh_adjacency_is_one_sided_and_the_or_rule_catches_it():
+    # On real MeSH the adjacency is ONE-SIDED: cluster headache sits deeper under the shared
+    # primary-headache parent, so it is in migraine's neighbourhood but not vice versa. The
+    # gate's OR rule is exactly what makes the pair UNSAFE regardless of order.
+    tree = _real_mesh_tree()
+    assert CLUSTER_HEADACHE in select_one_parent_up(tree, MIGRAINE)
+    assert MIGRAINE not in select_one_parent_up(tree, CLUSTER_HEADACHE)
 
 
 def test_parent_child_is_not_flagged_as_sibling():
